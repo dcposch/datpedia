@@ -18,5 +18,5 @@ echo "EXTRACTING..."
 ./scripts/extract.sh $1
 echo "ORGANIZING..."
 ./scripts/organize.sh $1
-echo "SHARING..."
-./scripts/share.sh $1
+echo "DONE"
+echo "Run 'cd organize/$1 && dat share'"
