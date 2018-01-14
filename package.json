@@ -1,0 +1,26 @@
+{
+  "name": "datpedia",
+  "version": "0.0.0",
+  "description": "wikipedia over dat://",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dcposch/datpedia.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dcposch/datpedia/issues"
+  },
+  "homepage": "https://github.com/dcposch/datpedia#readme",
+  "dependencies": {
+    "eslint": "^4.15.0",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-node": "^5.2.1",
+    "mkdirp": "^0.5.1",
+    "standard": "^10.0.3"
+  }
+}
