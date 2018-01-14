@@ -2,8 +2,9 @@
   "name": "datpedia",
   "version": "0.0.0",
   "description": "wikipedia over dat://",
-  "main": "index.js",
+  "main": "scripts/main.sh",
   "scripts": {
+    "start": "./scripts/main.sh",
     "test": "standard"
   },
   "repository": {

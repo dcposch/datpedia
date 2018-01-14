@@ -18,9 +18,8 @@ function main (src, dst) {
 
   if (entries.join(',') !== '-,A,I,M') {
     console.error(
-      'Unexpected source directory. Expected -, A, I, M. ' +
-        'Found ' +
-        entries.join(', ')
+      'Unexpected source directory. Expected -, A, I, M. Found %s',
+      entries.join(', ')
     )
   }
 
@@ -30,7 +29,7 @@ function main (src, dst) {
 
   const images = fs.readdirSync(src + '/I/m')
   console.log('found %d images...', images.length)
-  splitFiles(images, src + 'I/m', dst + '/img')
+  splitFiles(images, src + '/I/m', dst + '/img')
 }
 
 function splitFiles (files, src, dst, transformer) {
@@ -44,17 +43,18 @@ function splitFiles (files, src, dst, transformer) {
   Object.keys(filesByFolder).forEach(folder => {
     const ffs = filesByFolder[folder]
     console.log('Creating %s, copying %d files...', folder, ffs.length)
-    mkdirpSync(folder)
 
     // TODO
-    ffs.forEach(f => fs.copyFileSync(src + '/' + f, dst + '/' + f))
+    const dfolder = dst + '/' + folder
+    mkdirpSync(dfolder)
+    ffs.forEach(f => fs.copyFileSync(src + '/' + f, dfolder + '/' + f))
   })
 }
 
 function getFolder (file) {
   const name = file.substring(0, file.lastIndexOf('.'))
 
-  const parts = name[0]
+  const parts = [name[0]]
   if (name.length > 1) parts.push(name[1])
   if (name.length > 2) parts.push(name[2])
   if (name.length > 3) parts.push(name.substr(3, Math.min(10, name.length)))
