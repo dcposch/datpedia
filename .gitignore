@@ -3,3 +3,5 @@ download/
 extract/
 organize/
 subset/
+output/
+static/bundle.js

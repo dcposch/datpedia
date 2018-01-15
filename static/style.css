@@ -1,0 +1,8 @@
+body {
+  max-width:600px;
+  margin: 32px auto;
+  font: 16px/24px sans-serif;
+}
+.searchItem {
+  padding: 5px;
+}

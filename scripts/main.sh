@@ -20,4 +20,4 @@ echo "ORGANIZING..."
 ./scripts/organize.sh $1
 echo "DONE"
 echo "To update Datpedia, run:"
-echo "rm -rf 'output/*' && cp -r organize/$1/* output/ && dat share -d output/ --watch=false"
+echo "mkdir output && rm -rf output/* && cp -r organize/* output/ && dat share -d output/$1 --watch=false"

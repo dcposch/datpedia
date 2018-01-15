@@ -1,28 +1,42 @@
 {
   "name": "datpedia",
-  "version": "0.0.0",
   "description": "wikipedia over dat://",
-  "main": "scripts/main.sh",
-  "scripts": {
-    "start": "./scripts/main.sh",
-    "test": "standard"
+  "version": "0.0.0",
+  "browserify": {
+    "transform": [
+      "bubleify"
+    ]
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dcposch/datpedia.git"
-  },
-  "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/dcposch/datpedia/issues"
   },
-  "homepage": "https://github.com/dcposch/datpedia#readme",
   "dependencies": {
-    "blakejs": "^1.1.0",
     "eslint": "^4.15.0",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-node": "^5.2.1",
     "mkdirp": "^0.5.1",
-    "standard": "^10.0.3"
+    "normalize-for-search": "^2.0.1",
+    "react": "^16.2.0",
+    "react-autocomplete": "^1.7.2",
+    "react-dom": "^16.2.0"
+  },
+  "devDependencies": {
+    "browserify": "^15.2.0",
+    "bubleify": "^1.1.0",
+    "standard": "*",
+    "watchify": "^3.9.0"
+  },
+  "homepage": "https://github.com/dcposch/datpedia#readme",
+  "license": "ISC",
+  "main": "scripts/main.sh",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dcposch/datpedia.git"
+  },
+  "scripts": {
+    "build": "browserify app/index.js -o static/bundle.js",
+    "watch": "watchify app/index.js -dv -o static/bundle.js",
+    "start": "./scripts/main.sh",
+    "test": "standard"
   }
 }
