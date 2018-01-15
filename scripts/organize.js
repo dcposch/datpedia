@@ -2,6 +2,7 @@
 
 const fs = require('fs')
 const mkdirpSync = require('mkdirp').sync
+const blake = require('blakejs')
 
 if (process.argv.length !== 4) {
   console.error(
@@ -52,16 +53,12 @@ function splitFiles (files, src, dst, transformer) {
 }
 
 function getFolder (file) {
-  const name = file.substring(0, file.lastIndexOf('.'))
-
-  const parts = [name[0]]
-  if (name.length > 1) parts.push(name[1])
-  if (name.length > 2) parts.push(name[2])
-  if (name.length > 3) parts.push(name.substr(3, Math.min(10, name.length)))
-
+  const hash = blake.blake2bHex(file)
+  const parts = [hash[0], hash[1], hash[2]]
   return parts.join('/')
 }
 
 function transformArticle () {
   // TODO
 }
+
