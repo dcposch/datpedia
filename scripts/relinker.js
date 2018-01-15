@@ -12,7 +12,7 @@ function getImageUrls (html) {
 function getGroup1 (text, re) {
   const ret = []
   let m
-  while ((m = re.exec(html)) != null) {
+  while ((m = re.exec(text)) != null) {
     const url = m[1]
     ret.push(url)
   }
