@@ -1,11 +1,11 @@
 
 function getLinks (html) {
-  const re = /<a href="([^"]*)"/g
+  const re = /<a [^>]* href="([^"]*)"/g
   return getGroup1(html, re)
 }
 
 function getImageUrls (html) {
-  const re = /<img src="([^"]*)"/g
+  const re = /<img [^>]* src="([^"]*)"/g
   return getGroup1(html, re)
 }
 
