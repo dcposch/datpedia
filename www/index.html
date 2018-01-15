@@ -2,11 +2,27 @@
 <html>
   <head>
     <title>datpedia</title>
+    <script>
+      if (window.DatArchive && window.location.protocol !== 'dat:') {
+        window.location = 'dat://datpedia.org/'
+      }
+    </script>
+    <style>
+      body {
+        max-width: 600px;
+        margin: 32px auto;
+        font: 16px/24px sans-serif;
+      }
+    </style>
   </head>
   <body>
     <h1>datpedia</h1>
     <p>
-      <strong>this is the old web.</strong> go to <a href="https://wikipedia.org">wikipedia.org</a>, or install <a href="https://beakerbrowser.com/">Beaker Browser</a> to explore the <strong>peer-to-peer web</strong>. try visiting <code>dat://datpedia.org</code> in Beaker.
+      <strong>this is the old web.</strong> go to
+      <a href="https://wikipedia.org">wikipedia.org</a>, or install
+      <a href="https://beakerbrowser.com/">Beaker Browser</a> to explore the
+      <strong>peer-to-peer web</strong>. try visiting
+      <code>dat://datpedia.org</code> in Beaker.
     </p>
   </body>
 </html>
