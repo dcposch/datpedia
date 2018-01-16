@@ -20,17 +20,8 @@ module.exports = class Search extends React.Component {
       <ReactAutocomplete
         inputProps={{
           placeholder: 'Search Datpedia',
+          className: 'search',
           autoFocus: true
-        }}
-        inputProps={{
-          style: {
-            borderRadius: '10px',
-            borderColor: 'black',
-            borderSize: 3,
-            placeholder: true,
-            fontSize: 22,
-            fontFamily: 'sans-serif'
-          }
         }}
         menuStyle={{
           borderRadius: '3px',

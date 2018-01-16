@@ -3,6 +3,17 @@ body {
   margin: 32px auto;
   font: 16px/24px sans-serif;
 }
-.searchItem {
-  padding: 5px;
+
+.search {
+  border-radius: 10px;
+  border: 3px rgb(0, 0, 0, 0.5) solid;
+  font-size: 22px;
+  outline: 0;
+  padding: 5px 10px;
+  font-family: sans-serif;
+}
+
+.search:focus {
+  border-color: rgb(53, 200, 82);
+  box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.2);
 }
