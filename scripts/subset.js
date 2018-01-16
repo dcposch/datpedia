@@ -33,7 +33,8 @@ function transferArticle (dumpName, name) {
 
   console.log('Transferring %s with %d images', name, imageUrls.length)
 
-  fs.copyFileSync(filename, 'subset/A/' + name + '.html')
+  const newHtml = transformHtml(html)
+  fs.writeFileSync('subset/A/' + name + '.html', newHtml)
 
   imageUrls.filter(url => url.startsWith('../I/m')).map(url => {
     const imagePath = decodeURIComponent(url.substring(3))
@@ -45,4 +46,26 @@ function transferArticle (dumpName, name) {
       console.log('Failed to copy %s: %s', imagePath, e.message)
     }
   })
+}
+
+function transformHtml (html) {
+  const lines = html.split(/\n/g).map(s => s.trim())
+
+  let foundStylesheet = false
+  const newLines = lines
+    .filter(line => !line.includes('<script'))
+    .map(line => {
+      if (line.startsWith('<link rel="stylesheet"')) {
+        if (foundStylesheet) {
+          console.error('WARNING: found two stylesheets, ignoring second')
+          return ''
+        }
+        foundStylesheet = true
+        return '<link rel="stylesheet" href="../style.css">'
+      } else if (line.startsWith('<body ')) {
+        return line + '\n<h1><a href="/">datpedia</a></h1>'
+      }
+    })
+
+  return newLines.join('\n')
 }
