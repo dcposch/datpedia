@@ -12,12 +12,24 @@ fi
 
 echo "WIKIMEDIA TO DAT"
 mkdir -p download extract organize
+
 echo "DOWNLOADING..."
 ./scripts/download.sh $1
+
 echo "EXTRACTING..."
 ./scripts/extract.sh $1
-echo "ORGANIZING..."
-./scripts/organize.sh $1
+
+echo "SUBSETTING..."
+./scripts/subset.js $1 ./most-viewed/list.txt
+
+echo "BUILDING THE WEB APP..."
+npm run build
+cp ./most-viewed/list.txt ./subset/
+cp -r ./static/* ./subset/
+
+# echo "ORGANIZING..."
+# ./scripts/organize.sh $1
+
 echo "DONE"
 echo "To update Datpedia, run:"
 echo "mkdir output && rm -rf output/* && cp -r organize/* output/ && dat share -d output/$1 --watch=false"
