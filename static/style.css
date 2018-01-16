@@ -17,3 +17,19 @@ body {
   border-color: rgb(53, 200, 82);
   box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.2);
 }
+
+.h1-datpedia {
+  font-size: 48px;
+  padding: 16px 16px;
+  border-bottom: solid 4px black;
+}
+
+.h1-datpedia a {
+  color: black;
+  text-decoration: none;
+}
+
+.h1-datpedia a:active {
+  color: #333;
+  text-decoration: none;
+}

@@ -63,7 +63,10 @@ function transformHtml (html) {
         foundStylesheet = true
         return '<link rel="stylesheet" href="../style.css">'
       } else if (line.startsWith('<body ')) {
-        return line + '\n<h1><a href="/">datpedia</a></h1>'
+        return '<body class="mw-body mw-body-content mediawiki">' +
+          '<h1 class="h1-datpedia"><a href="/">datpedia</a></h1>'
+      } else {
+        return line
       }
     })
 
