@@ -16,8 +16,10 @@ module.exports = class App extends React.Component {
 
         <Search items={store.searchIndex} onSearch={this.onSearch} />
 
-        <section>
-          <a href="/A">Article Index</a>
+        <section className="footerLinks">
+          <small>
+            <a href="/A">Article Index</a>
+          </small>
         </section>
       </div>
     )

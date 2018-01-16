@@ -26,11 +26,14 @@ module.exports = class Search extends React.Component {
         menuStyle={{
           borderRadius: '3px',
           boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-          background: 'rgba(255, 255, 255, 0.9)',
+          background: 'rgba(255, 255, 255, 0.95)',
           padding: '0',
           position: 'fixed',
           overflow: 'auto',
           maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
+        }}
+        wrapperStyle={{
+          display: 'block'
         }}
         items={items}
         shouldItemRender={(item, value) => {
@@ -42,7 +45,9 @@ module.exports = class Search extends React.Component {
           <div
             className='searchItem'
             key={item.name}
-            style={{ backgroundColor: highlighted ? '#eee' : 'transparent'}}
+            style={{
+              backgroundColor: highlighted ? 'rgb(53, 200, 82)' : 'transparent'
+            }}
           >
             {item.name}
           </div>

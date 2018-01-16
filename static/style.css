@@ -2,20 +2,51 @@ body {
   max-width: 600px;
   margin: 32px auto;
   font: 16px/24px sans-serif;
+  background-image: url('bg-landing-page.svg');
+  background-repeat: no-repeat;
+  background-position: center 225px;
+  background-size: cover;
 }
 
 .search {
-  border-radius: 10px;
-  border: 3px rgb(0, 0, 0, 0.5) solid;
+  border-radius: 1000px;
+  border: 2px rgba(0, 0, 0, 0.8) solid;
   font-size: 22px;
   outline: 0;
   padding: 5px 10px;
   font-family: sans-serif;
+  width: 100%;
 }
 
 .search:focus {
   border-color: rgb(53, 200, 82);
-  box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.2);
+}
+
+.searchItem {
+  font-size: 22px;
+  padding: 5px;
+}
+
+a:link, a:visited {
+  color: rgb(53, 200, 82);
+  text-decoration: none;
+}
+
+a:hover, a:active {
+  text-decoration: underline;
+}
+
+h1 {
+  font-size: 60px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.footerLinks {
+  text-align: center;
+  font-size: 16px;
+  margin: 30px;
 }
 
 .h1-datpedia {
