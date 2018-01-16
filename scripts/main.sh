@@ -32,4 +32,4 @@ cp -r ./static/* ./subset/
 
 echo "DONE"
 echo "To update Datpedia, run:"
-echo "mkdir output && rm -rf output/* && cp -r organize/* output/ && dat share -d output/$1 --watch=false"
+echo "dat share -d subset/ --watch=false"
