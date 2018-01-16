@@ -41,7 +41,7 @@ function initDat () {
   })
 
   // Watch the search index for changes...
-  const searchActivity = store.archive.createFileActivityStream('/search.json')
+  const searchActivity = store.archive.createFileActivityStream('/list.txt')
 
   // And when there's a change, download the new version of the file...
   searchActivity.addEventListener('invalidated', ({path}) => {
@@ -52,17 +52,21 @@ function initDat () {
   // And when the download is done, use the new search index!
   searchActivity.addEventListener('changed', ({path}) => {
     console.log(path, 'has been updated!')
-    if (path === '/search.json') initSearchIndex()
+    if (path === '/list.txt') initSearchIndex()
   })
 }
 
 async function initSearchIndex () {
-  const articlesStr = await store.archive.readFile('search.json')
-  let articles = JSON.parse(articlesStr)
+  const articlesStr = await store.archive.readFile('/list.txt')
 
-  store.searchIndex = articles.map(url => {
-    const name = url.replace(/\.html$/, '').replace(/_/g, ' ')
+  let articles = articlesStr
+    .split('\n')
+    .filter(item => item.length >= 0)
+
+  store.searchIndex = articles.map(article => {
+    const name = article.replace(/_/g, ' ')
     const searchName = normalizeForSearch(name)
+    const url = article + '.html'
     return {
       name,
       searchName,
