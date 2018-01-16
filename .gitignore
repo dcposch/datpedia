@@ -5,3 +5,5 @@ organize/
 subset/
 output/
 static/bundle.js
+.cache/
+dist/

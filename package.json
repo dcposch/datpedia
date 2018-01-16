@@ -23,6 +23,7 @@
   "devDependencies": {
     "browserify": "^15.2.0",
     "bubleify": "^1.1.0",
+    "parcel-bundler": "^1.4.1",
     "standard": "*",
     "watchify": "^3.9.0"
   },
@@ -37,6 +38,7 @@
     "build": "browserify app/index.js -o static/bundle.js",
     "watch": "watchify app/index.js -dv -o static/bundle.js",
     "start": "./scripts/main.sh",
+    "zero": "parcel ./zero/index.html",
     "test": "standard"
   }
 }
