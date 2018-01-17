@@ -1,5 +1,5 @@
 
-const wikiDatAddr = 'dat://42d11736f14d728eddc10aa0633904ac48faeaa621511791b362e77431645587/wikipedia_en_simple_all_2017-01.zim'
+const wikiDatAddr = '/wikipedia_en_simple_all_2017-01.zim'
 
 
 const headers = new Headers({
@@ -7,8 +7,9 @@ const headers = new Headers({
 })
 
 console.log('Fetching...')
+const root = document.querySelector('#root')
 fetch(wikiDatAddr, { headers })
-  .then(res => console.log(res))
+  .then(res => root.innerText = 'it worked! range request result: ' + res.blob())
   .catch(err => console.error(err))
 
 
