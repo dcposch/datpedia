@@ -11,14 +11,16 @@
     "url": "https://github.com/dcposch/datpedia/issues"
   },
   "dependencies": {
-    "eslint": "^4.15.0",
+    "eslint": "^3.19.0",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-node": "^5.2.1",
     "mkdirp": "^0.5.1",
     "normalize-for-search": "^2.0.1",
+    "npm-check": "^5.5.2",
     "react": "^16.2.0",
     "react-autocomplete": "^1.7.2",
-    "react-dom": "^16.2.0"
+    "react-dom": "^16.2.0",
+    "zimmer": "^1.1.0"
   },
   "devDependencies": {
     "browserify": "^15.2.0",

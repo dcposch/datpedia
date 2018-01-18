@@ -30,7 +30,7 @@ module.exports = class Search extends React.Component {
           padding: '0',
           position: 'fixed',
           overflow: 'auto',
-          maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
+          maxHeight: '50%' // TODO: don't cheat, let it flow to the bottom
         }}
         wrapperStyle={{
           display: 'block'

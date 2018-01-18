@@ -22,7 +22,7 @@ function initDat () {
   // Get the url of the current archive
   const datUrl = window.location.origin
 
-  store.archive = new DatArchive(datUrl)
+  store.archive = new window.DatArchive(datUrl)
 
   // Listen to network events, for debugging purposes...
   const networkActivity = store.archive.createNetworkActivityStream()

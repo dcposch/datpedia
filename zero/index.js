@@ -3,14 +3,14 @@ main()
 async function main () {
   const wikiDatAddr = '/wikipedia_en_simple_all_2017-01.zim'
 
-  const headers = new Headers({
+  const headers = new window.Headers({
     'Range': 'bytes=0-1023'
   })
 
   console.log('Fetching...')
   const root = document.querySelector('#root')
 
-  const res = await fetch(wikiDatAddr, { headers })
+  const res = await window.fetch(wikiDatAddr, { headers })
   if (res.ok) {
     const buf = await res.arrayBuffer()
     root.innerText = 'it worked! range request result: ' + buf2hex(buf)

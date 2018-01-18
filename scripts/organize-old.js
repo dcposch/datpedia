@@ -61,4 +61,3 @@ function getFolder (file) {
 function transformArticle () {
   // TODO
 }
-

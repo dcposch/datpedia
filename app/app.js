@@ -9,16 +9,16 @@ module.exports = class App extends React.Component {
   }
 
   render () {
-    const { store, dispatch } = this.props
+    const { store } = this.props
     return (
       <div>
         <h1>datpedia</h1>
 
         <Search items={store.searchIndex} onSearch={this.onSearch} />
 
-        <section className="footerLinks">
+        <section className='footerLinks'>
           <small>
-            <a href="/A">Article Index</a>
+            <a href='/A'>Article Index</a>
           </small>
         </section>
       </div>

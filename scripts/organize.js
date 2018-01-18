@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const fs = require('fs')
-const mkdirpSync = require('mkdirp').sync
 const path = require('path')
 
 if (process.argv.length !== 4) {
