@@ -7,3 +7,7 @@ output/
 static/bundle.js
 .cache/
 dist/
+sw-bundle.js
+zero/test.zip
+zero/test2.zip
+zero/*.zim

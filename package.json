@@ -17,9 +17,12 @@
     "mkdirp": "^0.5.1",
     "normalize-for-search": "^2.0.1",
     "npm-check": "^5.5.2",
+    "pify": "^3.0.0",
     "react": "^16.2.0",
     "react-autocomplete": "^1.7.2",
     "react-dom": "^16.2.0",
+    "simple-concat": "^1.0.0",
+    "yauzl": "^2.9.1",
     "zimmer": "^1.1.0"
   },
   "devDependencies": {
@@ -38,9 +41,9 @@
   },
   "scripts": {
     "build": "browserify app/index.js -o static/bundle.js",
-    "watch": "watchify app/index.js -dv -o static/bundle.js",
     "start": "./scripts/main.sh",
-    "zero": "parcel ./zero/index.html",
-    "test": "standard"
+    "test": "standard",
+    "watch": "watchify app/index.js -dv -o static/bundle.js",
+    "zero": "parcel ./zero/index.html"
   }
 }
