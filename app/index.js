@@ -18,6 +18,7 @@ function init () {
   } else {
     initDat()
     initSearchIndex()
+    registerServiceWorker()
   }
   render()
 }
@@ -77,8 +78,14 @@ async function initSearchIndex () {
       url
     }
   })
+}
 
-  render()
+async function registerServiceWorker () {
+  if (!navigator.serviceWorker) throw new Error('No service worker support')
+  return navigator.serviceWorker.register(
+    '/sw-bundle.js',
+    { scope: '/' }
+  )
 }
 
 function render () {

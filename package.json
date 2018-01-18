@@ -42,6 +42,7 @@
   },
   "scripts": {
     "build": "browserify app/index.js -o static/bundle.js",
+    "build-sw": "browserify app/sw.js -o static/sw-bundle.js",
     "start": "./scripts/main.sh",
     "test": "standard",
     "watch": "watchify app/index.js -dv -o static/bundle.js",
