@@ -19,7 +19,7 @@ module.exports = class Search extends React.Component {
     return (
       <ReactAutocomplete
         inputProps={{
-          placeholder: 'Search Datpedia',
+          placeholder: 'search...',
           className: 'search',
           autoFocus: true
         }}

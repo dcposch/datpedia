@@ -15,7 +15,6 @@ init()
 function init () {
   if (!window.DatArchive) {
     console.log('Old web, not loading dat...')
-    return
   } else {
     initDat()
     initSearchIndex()

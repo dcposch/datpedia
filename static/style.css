@@ -1,48 +1,8 @@
+/* article pages */
 body {
-  max-width: 600px;
-  margin: 32px auto;
-  font: 16px/24px sans-serif;
-}
-
-.search {
-  border-radius: 1000px;
-  border: 2px rgba(0, 0, 0, 0.8) solid;
-  font-size: 22px;
-  outline: 0;
-  padding: 5px 10px;
-  font-family: sans-serif;
-  width: 100%;
-}
-
-.search:focus {
-  border-color: rgb(53, 200, 82);
-  box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.2);
-}
-
-.searchItem {
-  font-size: 22px;
-  padding: 5px;
-}
-
-a:link, a:visited {
-  color: rgb(53, 200, 82);
-  text-decoration: none;
-}
-
-a:hover, a:active {
-  text-decoration: underline;
-}
-
-h1 {
-  font-size: 60px;
-  margin-bottom: 30px;
-  text-align: center;
-}
-
-.footerLinks {
-  text-align: center;
-  font-size: 16px;
-  margin: 30px;
+   max-width: 600px;
+   margin: 32px auto;
+   font: 14px/24px sans-serif;
 }
 
 .h1-datpedia {
@@ -59,4 +19,65 @@ h1 {
 .h1-datpedia a:active {
   color: #333;
   text-decoration: none;
+}
+
+/* search page */
+.SearchPage {
+  max-width: 480px;
+  margin: 32px auto;
+  font: 16px/24px sans-serif;
+}
+
+.SearchPage h1,
+.SearchPage h2 {
+  background: #fff;
+  text-align: center;
+}
+
+.SearchPage h1 {
+  font-size: 64px;
+  padding: 32px;
+  margin: 96px 0 32px 0;
+}
+
+.SearchPage h2 {
+  font-size: 24px;
+  padding: 16px;
+  margin: 32px 0;
+}
+
+.SearchPage .search {
+  border: none;
+  outline: 0;
+  font-size: 24px;
+  font-weight: bold;
+  padding: 16px 32px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.SearchPage .search:focus {
+  border-color: rgb(53, 200, 82);
+  box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.2);
+}
+
+.SearchPage .searchItem {
+  font-size: 24px;
+  padding: 8px;
+}
+
+.SearchPage a:link,
+.SearchPage a:visited {
+  text-decoration: none;
+}
+
+.SearchPage a:hover,
+.SearchPage a:active {
+  text-decoration: underline;
+}
+
+.SearchPage .footerLinks {
+  text-align: center;
+  font-size: 16px;
+  margin: 32px;
 }
