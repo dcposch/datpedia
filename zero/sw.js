@@ -1,4 +1,4 @@
-/* global Response, URL */
+/* global Response, URL, Headers, fetch */
 
 // Shim setImmediate() for `yauzl`
 global.setImmediate = process.nextTick.bind(process)
@@ -7,13 +7,19 @@ const fs = require('fs')
 const pify = require('pify')
 const yauzl = require('yauzl')
 const concat = require('simple-concat')
+const stream = require('stream')
 
 const concatAsync = pify(concat)
 const zipFromBufferAsync = pify(yauzl.fromBuffer)
+const zipFromRandomAccessReaderAsync = pify(yauzl.fromRandomAccessReader)
 
 const RAW_ZIP = fs.readFileSync('./test.zip')
 
-// const wikiDatAddr = '/wikipedia_en_simple_all_2017-01.zim'
+// const ZIP_PATH = '/test.zip'
+// const ZIP_SIZE = 2993
+
+const ZIP_PATH = '/test2.zip'
+const ZIP_SIZE = 655
 
 global.addEventListener('install', event => {
   console.log('Service worker installed.')
@@ -61,7 +67,13 @@ async function getResponse (fileName) {
 }
 
 async function openZip () {
-  const zipFile = zipFromBufferAsync(RAW_ZIP, { lazyEntries: true })
+  // const zipFile = zipFromBufferAsync(RAW_ZIP, { lazyEntries: true })
+  const reader = new ZipRandomAccessReader()
+  const zipFile = zipFromRandomAccessReaderAsync(
+    reader,
+    ZIP_SIZE,
+    { lazyEntries: true }
+  )
   return zipFile
 }
 
@@ -129,4 +141,24 @@ async function readEntries (zipFile) {
       zipFile.removeListener('error', onError)
     }
   })
+}
+
+class ZipRandomAccessReader extends yauzl.RandomAccessReader {
+  _readStreamForRange (start, end) {
+    const headers = new Headers({
+      'Range': `bytes=${start}-${end - 1}`
+    })
+
+    const through = new stream.PassThrough()
+
+    fetch(ZIP_PATH, { headers })
+      .then(res => {
+        res.arrayBuffer()
+          .then(abuf => {
+            through.end(Buffer.from(abuf))
+          })
+      })
+
+    return through
+  }
 }

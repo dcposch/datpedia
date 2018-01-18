@@ -1,15 +1,11 @@
-/* global Headers, fetch */
+/* global fetch */
 
 main()
 
 async function main () {
   registerServiceWorker()
 
-  const headers = new Headers({
-    // 'Range': 'bytes=0-1023'
-  })
-
-  const res = await fetch('/index.js', { headers })
+  const res = await fetch('/index.js')
   if (res.ok) {
     const text = await res.text()
     console.log('it worked')
