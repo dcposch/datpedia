@@ -13,8 +13,13 @@ const store = {
 init()
 
 function init () {
-  initDat()
-  initSearchIndex()
+  if (!window.DatArchive) {
+    console.log('Old web, not loading dat...')
+    return
+  } else {
+    initDat()
+    initSearchIndex()
+  }
   render()
 }
 

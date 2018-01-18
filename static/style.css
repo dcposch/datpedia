@@ -2,10 +2,6 @@ body {
   max-width: 600px;
   margin: 32px auto;
   font: 16px/24px sans-serif;
-  background-image: url('bg-landing-page.svg');
-  background-repeat: no-repeat;
-  background-position: center 225px;
-  background-size: cover;
 }
 
 .search {
