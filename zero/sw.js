@@ -3,23 +3,30 @@
 // Shim setImmediate() for `yauzl`
 global.setImmediate = process.nextTick.bind(process)
 
-const fs = require('fs')
+// const fs = require('fs')
 const pify = require('pify')
 const yauzl = require('yauzl')
 const concat = require('simple-concat')
 const stream = require('stream')
 
 const concatAsync = pify(concat)
-const zipFromBufferAsync = pify(yauzl.fromBuffer)
+// const zipFromBufferAsync = pify(yauzl.fromBuffer)
 const zipFromRandomAccessReaderAsync = pify(yauzl.fromRandomAccessReader)
 
-const RAW_ZIP = fs.readFileSync('./test.zip')
+// const RAW_ZIP = fs.readFileSync('./test.zip')
 
 // const ZIP_PATH = '/test.zip'
 // const ZIP_SIZE = 2993
 
 const ZIP_PATH = '/test2.zip'
 const ZIP_SIZE = 655
+
+const FILENAME_BLACKLIST = [
+  'index.html',
+  'main.js',
+  'sw-bundle.js',
+  ZIP_PATH
+]
 
 global.addEventListener('install', event => {
   console.log('Service worker installed.')
@@ -32,7 +39,7 @@ global.addEventListener('fetch', event => {
 
   console.log('Service worker fetch', url.pathname)
 
-  if (url.pathname === '/index.js') {
+  if (!FILENAME_BLACKLIST.includes(url.pathname)) {
     // event.respondWith(getResponse(request.url))
     // const response = new Response('synthetic response', {
     //   // status/statusText default to 200/OK, but we're explicitly setting them here.
@@ -151,6 +158,9 @@ class ZipRandomAccessReader extends yauzl.RandomAccessReader {
 
     const through = new stream.PassThrough()
 
+    // TODO: use simple-get (which uses john's stream-http internally) to
+    // return a proper stream back, instead of this solution which waits for
+    // the full range request to return before returning the data
     fetch(ZIP_PATH, { headers })
       .then(res => {
         res.arrayBuffer()
