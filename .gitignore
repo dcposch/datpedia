@@ -8,5 +8,6 @@ zip/
 
 static/bundle.js
 static/sw-bundle.js
+static/wiki.zip
 
 .cache/
