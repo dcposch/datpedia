@@ -125,9 +125,16 @@ class ZipRandomAccessReader extends yauzl.RandomAccessReader {
     return through
   }
 
-  /* read (buffer, offset, length, position, callback) {
-
-  } */
+  read (buffer, offset, length, position, callback) {
+    readBufsForRange(this._zipPath, position, position + length - 1)
+      .then(pages => {
+        pages.forEach(page => {
+          page.copy(buffer, offset)
+          offset += page.length
+        })
+        callback()
+      })
+  }
 }
 
 // TODO: LRU
@@ -150,7 +157,8 @@ async function readBufsForRange (path, start, end) {
   // Return buffers
   const ret = new Array(pageEnd - pageStart + 1)
   for (let page = pageStart; page <= pageEnd; page++) {
-    let buf = await _pagePromiseCache[page]
+    const promise = _pagePromiseCache[page]
+    let buf = await promise
     if (page === pageStart && page === pageEnd) {
       buf = buf.slice(start - (page << PAGE_BITS), end - (page << PAGE_BITS) + 1)
     } else if (page === pageStart) {
