@@ -7,11 +7,12 @@ const App = require('./App.js')
 const {openZip, getFileData} = require('./unzip.js')
 
 const ZIP_PATH = '/wiki.zip'
-const ZIP_SIZE = 1757653124
+// const ZIP_SIZE = 1757653124 // Simple English Wiki
+const ZIP_SIZE = 1184095 // Ray Charles
 
 const zipFilePromise = openZip(ZIP_PATH, ZIP_SIZE)
 
-const store = {
+const store = window.store = {
   urlName: null, // null for the home page, or eg "Star_Wars" for that article
   searchIndex: [], // list of available articles, search normalized and sorted
   articleCache: {} // article HTML cache, eg "Star_Wars": "<html>..."
@@ -131,6 +132,7 @@ function routeAndRender () {
   // Route
   const {hash} = window.location
   store.urlName = (hash && hash.length > 1) ? hash.substring(1) : null
+  console.log('routing', store.urlName)
 
   // Start loading the article asynchronously
   if (store.urlName != null) loadArticle(store.urlName)
@@ -140,7 +142,15 @@ function routeAndRender () {
 }
 
 async function loadArticle (urlName) {
+  if (store.articleCache[urlName] != null) {
+    return
+  }
+
+  console.log(`loading article ${urlName}`)
   const zipFile = await zipFilePromise
-  const html = await getFileData('/A/' + urlName + '.html', zipFile)
-  return html
+  const html = await getFileData(zipFile, 'A/' + urlName + '.html')
+  console.log(`loaded article ${urlName}, got ${html && html.length} b`)
+  store.articleCache[urlName] = html
+
+  render()
 }
