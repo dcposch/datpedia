@@ -5,7 +5,7 @@ const Search = require('./search')
 module.exports = class App extends React.Component {
   constructor (props) {
     super(props)
-    this.onSearch = this.onSearch.bind(this)
+    this._onSelectBound = this.onSelect.bind(this)
   }
 
   render () {
@@ -48,12 +48,12 @@ module.exports = class App extends React.Component {
           for the peer-to-peer web
         </h2>
 
-        <Search items={store.searchIndex} onSearch={this.onSearch} />
+        <Search items={store.searchIndex} onSelect={this._onSelectBound} />
       </div>
     )
   }
 
-  onSearch (item) {
+  onSelect (item) {
     const { dispatch } = this.props
     dispatch('NAVIGATE', '/A/' + item.url)
   }

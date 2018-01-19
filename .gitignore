@@ -8,6 +8,5 @@ zip/
 
 static/bundle.js
 static/sw-bundle.js
-static/list.txt
 
 .cache/

@@ -14,7 +14,7 @@ init()
 
 function init () {
   if (!window.DatArchive) {
-    console.log('Old web, not loading dat...')
+    console.log('old web, not loading dat...')
   } else {
     initDat()
   }
@@ -36,13 +36,13 @@ function initDat () {
     console.log(connections, 'current peers')
   })
   networkActivity.addEventListener('download', ({feed, block, bytes}) => {
-    console.log('Downloaded a block in the', feed, {block, bytes})
+    console.log('downloaded a block in the', feed, {block, bytes})
   })
   networkActivity.addEventListener('upload', ({feed, block, bytes}) => {
-    console.log('Uploaded a block in the', feed, {block, bytes})
+    console.log('uploaded a block in the', feed, {block, bytes})
   })
   networkActivity.addEventListener('sync', ({feed}) => {
-    console.log('Downloaded everything currently published in the', feed)
+    console.log('downloaded everything currently published in the', feed)
   })
 
   // Watch the search index for changes...
@@ -56,7 +56,7 @@ function initDat () {
 
   // And when the download is done, use the new search index!
   searchActivity.addEventListener('changed', ({path}) => {
-    console.log(path, 'has been updated!')
+    console.log(path, 'has changed')
     if (path === '/list.txt') initSearchIndex()
   })
 }
@@ -72,7 +72,7 @@ async function initSearchIndex () {
 
   let articles = articlesStr
     .split('\n')
-    .filter(item => item.length >= 0)
+    .filter(item => item.length > 0)
 
   store.searchIndex = articles.map(article => {
     const name = article.replace(/_/g, ' ')
@@ -84,6 +84,9 @@ async function initSearchIndex () {
       url
     }
   })
+
+  console.log('loaded search index, %d entries', store.searchIndex.length)
+  render()
 }
 
 /**

@@ -13,8 +13,10 @@ module.exports = class Search extends React.Component {
   render () {
     const {
       items = [],
-      onSearch = () => {}
+      onSelect = () => {}
     } = this.props
+
+    console.log('search', this.state.value, items)
 
     return (
       <ReactAutocomplete
@@ -37,6 +39,7 @@ module.exports = class Search extends React.Component {
         }}
         items={items}
         shouldItemRender={(item, value) => {
+          console.log('sIR', item, value)
           return value.length !== 0 &&
             item.searchName.indexOf(normalizeForSearch(value)) > -1
         }}
@@ -56,7 +59,7 @@ module.exports = class Search extends React.Component {
         onChange={e => this.setState({ value: e.target.value })}
         onSelect={(value, item) => {
           this.setState({ value })
-          onSearch(item)
+          onSelect(item)
         }}
       />
     )
