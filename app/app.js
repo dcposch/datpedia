@@ -42,8 +42,8 @@ module.exports = class App extends React.Component {
         <h1>datpedia</h1>
 
         <h2>
-          wikipedia over dat:// <br />
-          —<br />
+          wikipedia over dat://<br />
+          <hr />
           a peer-to-peer encyclopedia<br />
           for the peer-to-peer web
         </h2>
@@ -55,6 +55,6 @@ module.exports = class App extends React.Component {
 
   onSelect (item) {
     const { dispatch } = this.props
-    dispatch('NAVIGATE', '/A/' + item.url)
+    dispatch('NAVIGATE', '#' + item.urlName)
   }
 }

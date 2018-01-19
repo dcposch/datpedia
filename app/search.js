@@ -16,8 +16,6 @@ module.exports = class Search extends React.Component {
       onSelect = () => {}
     } = this.props
 
-    console.log('search', this.state.value, items)
-
     return (
       <ReactAutocomplete
         inputProps={{
@@ -26,42 +24,43 @@ module.exports = class Search extends React.Component {
           autoFocus: true
         }}
         menuStyle={{
-          borderRadius: '3px',
-          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-          background: 'rgba(255, 255, 255, 0.95)',
           padding: '0',
           position: 'fixed',
-          overflow: 'auto',
-          maxHeight: '50%' // TODO: don't cheat, let it flow to the bottom
+          overflow: 'auto'
         }}
         wrapperStyle={{
           display: 'block'
         }}
         items={items}
-        shouldItemRender={(item, value) => {
-          console.log('sIR', item, value)
-          return value.length !== 0 &&
-            item.searchName.indexOf(normalizeForSearch(value)) > -1
-        }}
+        shouldItemRender={(item, value) =>
+          value.length !== 0 && item.searchName.indexOf(value) > -1
+        }
         getItemValue={item => item.name}
         renderItem={(item, highlighted) =>
           <div
             className='searchItem'
             key={item.name}
             style={{
-              backgroundColor: highlighted ? 'rgb(53, 200, 82)' : 'transparent'
+              margin: '8px 0',
+              padding: '4px 32px',
+              background: '#fff',
+              border: '2px solid ' + (highlighted ? '#000' : '#fff')
             }}
           >
             {item.name}
           </div>
         }
-        value={this.state.value}
-        onChange={e => this.setState({ value: e.target.value })}
+        value={normalizeForSearch(this.state.value)}
+        onChange={e => this._onInputChange(e)}
         onSelect={(value, item) => {
           this.setState({ value })
           onSelect(item)
         }}
       />
     )
+  }
+
+  _onInputChange (e) {
+    this.setState({ value: e.target.value })
   }
 }

@@ -74,14 +74,13 @@ async function initSearchIndex () {
     .split('\n')
     .filter(item => item.length > 0)
 
-  store.searchIndex = articles.map(article => {
-    const name = article.replace(/_/g, ' ')
+  store.searchIndex = articles.map(urlName => {
+    const name = decodeURIComponent(urlName.replace(/_/g, ' '))
     const searchName = normalizeForSearch(name)
-    const url = article + '.html'
     return {
+      urlName,
       name,
-      searchName,
-      url
+      searchName
     }
   })
 
@@ -103,8 +102,11 @@ async function initSearchIndex () {
  */
 
 function render () {
+  const {hash} = window.location
+  const article = (hash && hash.length > 1) ? hash.substring(1) : null
   const root = document.querySelector('#root')
-  ReactDOM.render(<App store={store} dispatch={dispatch} />, root)
+  const app = <App article={article} store={store} dispatch={dispatch} />
+  ReactDOM.render(app, root)
 }
 
 function dispatch (action, data) {
@@ -112,6 +114,7 @@ function dispatch (action, data) {
   switch (action) {
     case 'NAVIGATE':
       window.location = data
+      render()
       return
     default:
       throw new Error('unknown action ' + action)
