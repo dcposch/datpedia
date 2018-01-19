@@ -1,25 +1,11 @@
+const {openZip, getFileData} = require('./unzip.js')
+
 /* global Response, URL, Headers, fetch */
-
-// Shim setImmediate() for `yauzl`
-global.setImmediate = process.nextTick.bind(process)
-
-// const fs = require('fs')
-const pify = require('pify')
-const yauzl = require('yauzl')
-const concat = require('simple-concat')
-const stream = require('stream')
-
-const concatAsync = pify(concat)
-// const zipFromBufferAsync = pify(yauzl.fromBuffer)
-const zipFromRandomAccessReaderAsync = pify(yauzl.fromRandomAccessReader)
-
-// const RAW_ZIP = fs.readFileSync('./test.zip')
-
-// const ZIP_PATH = '/test.zip'
-// const ZIP_SIZE = 2993
 
 const ZIP_PATH = '/wiki.zip'
 const ZIP_SIZE = 1757653124
+
+const zipFilePromise = openZip(ZIP_PATH, ZIP_SIZE)
 
 const FILENAME_BLACKLIST = [
   'index.html',
@@ -37,22 +23,11 @@ global.addEventListener('fetch', event => {
   const { request } = event
   const url = new URL(request.url)
 
-  console.log('Service worker fetch', url.pathname)
+  console.log('service worker fetch', url.pathname)
 
   if (!FILENAME_BLACKLIST.includes(url.pathname)) {
-    // event.respondWith(getResponse(request.url))
-    // const response = new Response('synthetic response', {
-    //   // status/statusText default to 200/OK, but we're explicitly setting them here.
-    //   status: 200,
-    //   statusText: 'OK',
-    //   headers: {
-    //     'Content-Type': 'text/html',
-    //     'X-Mock-Response': 'yes'
-    //   }
-    // })
-
-    console.log('sending fake response')
-    event.respondWith(getResponse(url.pathname))
+    const response = getResponse(url.pathname)
+    event.respondWith(response)
   }
 
   // If our if() condition is false, then this fetch handler won't intercept the
@@ -63,112 +38,7 @@ global.addEventListener('fetch', event => {
 })
 
 async function getResponse (fileName) {
-  const zipFile = await openZip()
-
-  // zip entries don't have leading slash
-  if (fileName[0] === '/') fileName = fileName.slice(1)
-
-  const fileData = await getFileData(zipFile, fileName)
+  const fileData = await getFileData(fileName, zipFilePromise)
   const response = new Response(fileData.toString())
   return response
-}
-
-async function openZip () {
-  // const zipFile = zipFromBufferAsync(RAW_ZIP, { lazyEntries: true })
-  const reader = new ZipRandomAccessReader()
-  const zipFile = zipFromRandomAccessReaderAsync(
-    reader,
-    ZIP_SIZE,
-    { lazyEntries: true }
-  )
-  return zipFile
-}
-
-async function getFileData (zipFile, fileName) {
-  const entry = await getEntry(zipFile, fileName)
-
-  const openReadStream = pify(zipFile.openReadStream.bind(zipFile))
-  const readStream = await openReadStream(entry)
-
-  const fileData = await concatAsync(readStream)
-  return fileData
-}
-
-async function getEntry (zipFile, fileName) {
-  const entries = await readEntries(zipFile)
-  console.log(entries[0].fileName)
-  const entry = entries.find(entry => entry.fileName === fileName)
-  return entry
-}
-
-// In zip file entries, directory file names end with '/'
-const RE_DIRECTORY_NAME = /\/$/
-
-async function readEntries (zipFile) {
-  return new Promise((resolve, reject) => {
-    const entries = []
-
-    let remainingEntries = zipFile.entryCount
-
-    zipFile.readEntry()
-    zipFile.on('entry', onEntry)
-    zipFile.once('error', onError)
-
-    function onEntry (entry) {
-      console.log('entry:')
-      console.log(entry)
-
-      remainingEntries -= 1
-
-      if (RE_DIRECTORY_NAME.test(entry.fileName)) {
-        // This is a directory entry
-        // Note that entires for directories themselves are optional.
-        // An entry's fileName implicitly requires its parent directories to exist.
-      } else {
-        // This is a file entry
-        entries.push(entry)
-      }
-
-      if (remainingEntries === 0) {
-        cleanup()
-        resolve(entries)
-      } else {
-        // Continue reading entries
-        zipFile.readEntry()
-      }
-    }
-
-    function onError (err) {
-      cleanup()
-      reject(err)
-    }
-
-    function cleanup () {
-      zipFile.removeListener('entry', onEntry)
-      zipFile.removeListener('error', onError)
-    }
-  })
-}
-
-class ZipRandomAccessReader extends yauzl.RandomAccessReader {
-  _readStreamForRange (start, end) {
-    const headers = new Headers({
-      'Range': `bytes=${start}-${end - 1}`
-    })
-
-    const through = new stream.PassThrough()
-
-    // TODO: use simple-get (which uses john's stream-http internally) to
-    // return a proper stream back, instead of this solution which waits for
-    // the full range request to return before returning the data
-    fetch(ZIP_PATH, { headers })
-      .then(res => {
-        res.arrayBuffer()
-          .then(abuf => {
-            through.end(Buffer.from(abuf))
-          })
-      })
-
-    return through
-  }
 }

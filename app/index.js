@@ -80,13 +80,18 @@ async function initSearchIndex () {
   })
 }
 
-async function registerServiceWorker () {
-  if (!navigator.serviceWorker) throw new Error('No service worker support')
-  return navigator.serviceWorker.register(
-    '/sw-bundle.js',
-    { scope: '/' }
-  )
-}
+/**
+ * TODO: maybe use ServiceWorker once Beaker allows it
+ * See: https://github.com/beakerbrowser/beaker/issues/46
+ *
+ * async function registerServiceWorker () {
+ *   if (!navigator.serviceWorker) throw new Error('No service worker support')
+ *   return navigator.serviceWorker.register(
+ *     '/sw-bundle.js',
+ *     { scope: '/' }
+ *   )
+ * }
+ */
 
 function render () {
   const root = document.querySelector('#root')

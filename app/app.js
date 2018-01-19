@@ -41,17 +41,14 @@ module.exports = class App extends React.Component {
 
         <h1>datpedia</h1>
 
-        <h2>wikipedia over dat:// </h2>
-
-        <h2>a peer-to-peer encyclopedia<br />for the peer-to-peer web</h2>
+        <h2>
+          wikipedia over dat:// <br />
+          —<br />
+          a peer-to-peer encyclopedia<br />
+          for the peer-to-peer web
+        </h2>
 
         <Search items={store.searchIndex} onSearch={this.onSearch} />
-
-        <section className='footerLinks'>
-          <small>
-            <a href='/A'>article index</a>
-          </small>
-        </section>
       </div>
     )
   }

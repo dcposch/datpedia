@@ -25,7 +25,7 @@ body {
 .SearchPage {
   max-width: 480px;
   margin: 32px auto;
-  font: 16px/24px sans-serif;
+  font: 16px/32px sans-serif;
 }
 
 .SearchPage h1,
@@ -47,7 +47,7 @@ body {
 }
 
 .SearchPage .search {
-  border: none;
+  border: 2px solid transparent;
   outline: 0;
   font-size: 24px;
   font-weight: bold;
@@ -57,8 +57,7 @@ body {
 }
 
 .SearchPage .search:focus {
-  border-color: rgb(53, 200, 82);
-  box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.2);
+  border-color: black;
 }
 
 .SearchPage .searchItem {
@@ -74,10 +73,4 @@ body {
 .SearchPage a:hover,
 .SearchPage a:active {
   text-decoration: underline;
-}
-
-.SearchPage .footerLinks {
-  text-align: center;
-  font-size: 16px;
-  margin: 32px;
 }

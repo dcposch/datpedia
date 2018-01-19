@@ -1,84 +1,38 @@
-/* global Response, URL, Headers, fetch */
-
-// Shim setImmediate() for `yauzl`
-global.setImmediate = process.nextTick.bind(process)
-
-// const fs = require('fs')
 const pify = require('pify')
 const yauzl = require('yauzl')
 const concat = require('simple-concat')
 const stream = require('stream')
 
+// Shim setImmediate() for `yauzl`
+global.setImmediate = process.nextTick.bind(process)
+
 const concatAsync = pify(concat)
-// const zipFromBufferAsync = pify(yauzl.fromBuffer)
 const zipFromRandomAccessReaderAsync = pify(yauzl.fromRandomAccessReader)
 
-// const RAW_ZIP = fs.readFileSync('./test.zip')
+module.exports = { openZip, getFileData }
 
-// const ZIP_PATH = '/test.zip'
-// const ZIP_SIZE = 2993
-
-const ZIP_PATH = '/test2.zip'
-const ZIP_SIZE = 655
-
-const FILENAME_BLACKLIST = [
-  'index.html',
-  'main.js',
-  'sw-bundle.js',
-  ZIP_PATH
-]
-
-global.addEventListener('install', event => {
-  console.log('Service worker installed.')
-  global.skipWaiting()
-})
-
-global.addEventListener('fetch', event => {
-  const { request } = event
-  const url = new URL(request.url)
-
-  console.log('Service worker fetch', url.pathname)
-
-  if (!FILENAME_BLACKLIST.includes(url.pathname)) {
-    // event.respondWith(getResponse(request.url))
-    // const response = new Response('synthetic response', {
-    //   // status/statusText default to 200/OK, but we're explicitly setting them here.
-    //   status: 200,
-    //   statusText: 'OK',
-    //   headers: {
-    //     'Content-Type': 'text/html',
-    //     'X-Mock-Response': 'yes'
-    //   }
-    // })
-
-    console.log('sending fake response')
-    event.respondWith(getResponse(url.pathname))
-  }
-
-  // If our if() condition is false, then this fetch handler won't intercept the
-  // request. If there are any other fetch handlers registered, they will get a
-  // chance to call event.respondWith(). If no fetch handlers call
-  // event.respondWith(), the request will be handled by the browser as if there were
-  // no service worker involvement.
-})
-
-async function getResponse (fileName) {
-  const zipFile = await openZip()
+/**
+ * Given a filename and a loaded (or loading) ZipRandomAccessReader,
+ * extracts file data.
+ */
+async function getFileData (fileName, zipFilePromise) {
+  const zipFile = await zipFilePromise
 
   // zip entries don't have leading slash
   if (fileName[0] === '/') fileName = fileName.slice(1)
 
   const fileData = await getFileData(zipFile, fileName)
-  const response = new Response(fileData.toString())
-  return response
 }
 
-async function openZip () {
+/**
+ * Opens a ZipRandomAccessReader
+ */
+async function openZip (zipPath, zipSize) {
   // const zipFile = zipFromBufferAsync(RAW_ZIP, { lazyEntries: true })
-  const reader = new ZipRandomAccessReader()
+  const reader = new ZipRandomAccessReader(zipPath)
   const zipFile = zipFromRandomAccessReaderAsync(
     reader,
-    ZIP_SIZE,
+    zipSize,
     { lazyEntries: true }
   )
   return zipFile
@@ -151,6 +105,11 @@ async function readEntries (zipFile) {
 }
 
 class ZipRandomAccessReader extends yauzl.RandomAccessReader {
+  constructor (zipPath) {
+    super()
+    this._zipPath = zipPath
+  }
+
   _readStreamForRange (start, end) {
     const headers = new Headers({
       'Range': `bytes=${start}-${end - 1}`
@@ -161,7 +120,7 @@ class ZipRandomAccessReader extends yauzl.RandomAccessReader {
     // TODO: use simple-get (which uses john's stream-http internally) to
     // return a proper stream back, instead of this solution which waits for
     // the full range request to return before returning the data
-    fetch(ZIP_PATH, { headers })
+    window.fetch(this._zipPath, { headers })
       .then(res => {
         res.arrayBuffer()
           .then(abuf => {
