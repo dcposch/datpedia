@@ -2,7 +2,12 @@ const React = require('react')
 const ReactAutocomplete = require('react-autocomplete')
 const normalizeForSearch = require('normalize-for-search')
 
-module.exports = class Search extends React.Component {
+/**
+ * Shows a typeahead search box over a given list of items.
+ * Each item must have {value, name}
+ * Calls back onSelect(item) when the user chooses an item.
+ */
+module.exports = class SearchBox extends React.Component {
   constructor (props) {
     super(props)
     this.state = {

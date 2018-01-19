@@ -3,7 +3,7 @@ const normalizeForSearch = require('normalize-for-search')
 const React = require('react')
 const ReactDOM = require('react-dom')
 
-const App = require('./app.js')
+const App = require('./App.js')
 
 const store = {
   archive: null,
