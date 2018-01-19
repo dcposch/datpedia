@@ -1,9 +1,9 @@
 const normalizeForSearch = require('normalize-for-search')
-
 const React = require('react')
 const ReactDOM = require('react-dom')
 
 const App = require('./App.js')
+const { searchIndexSort } = require('./util')
 
 const store = {
   archive: null,
@@ -73,17 +73,21 @@ async function initSearchIndex () {
 
   let articles = articlesStr
     .split('\n')
-    .filter(item => item.length > 0)
+    .slice(0, -1) // remove extra empty item caused by trailing \n
 
-  store.searchIndex = articles.map(urlName => {
-    const name = decodeURIComponent(urlName.replace(/_/g, ' '))
-    const searchName = normalizeForSearch(name)
-    return {
-      urlName,
-      name,
-      searchName
-    }
-  })
+  store.searchIndex = articles
+    .map(urlName => {
+      const name = decodeURIComponent(urlName.replace(/_/g, ' '))
+      const searchName = normalizeForSearch(name)
+      return {
+        urlName,
+        name,
+        searchName
+      }
+    })
+    // TODO: remove this sort once list.txt is sorted correctly using this same
+    // sort function
+    .sort(searchIndexSort)
 
   console.log('loaded search index, %d entries', store.searchIndex.length)
   render()

@@ -1,26 +1,35 @@
 const React = require('react')
 const ReactAutocomplete = require('react-autocomplete')
 const normalizeForSearch = require('normalize-for-search')
+const binarySearchBounds = require('binary-search-bounds')
+
+const { searchIndexSort } = require('./util')
 
 /**
  * Shows a typeahead search box over a given list of items.
  * Each item must have {value, name}
- * Calls back onSelect(item) when the user chooses an item.
+ * Dispatches a 'NAVIGATE' action when the user chooses an item.
  */
 module.exports = class SearchBox extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      value: ''
+      value: '',
+      matchedItems: []
     }
+    this._onInputChangeBound = this._onInputChange.bind(this)
   }
 
   render () {
     const {
-      items = [],
       autoFocus = false,
       dispatch
     } = this.props
+
+    const {
+      matchedItems,
+      value
+    } = this.state
 
     return (
       <ReactAutocomplete
@@ -35,10 +44,7 @@ module.exports = class SearchBox extends React.Component {
           overflow: 'auto'
         }}
         wrapperProps={{className: 'SearchBox'}}
-        items={items}
-        shouldItemRender={(item, value) =>
-          value.length !== 0 && item.searchName.indexOf(value) > -1
-        }
+        items={matchedItems}
         getItemValue={item => item.name}
         renderItem={(item, highlighted) =>
           <div
@@ -54,8 +60,8 @@ module.exports = class SearchBox extends React.Component {
             {item.name}
           </div>
         }
-        value={normalizeForSearch(this.state.value)}
-        onChange={e => this._onInputChange(e)}
+        value={value}
+        onChange={this._onInputChangeBound}
         onSelect={(value, item) => {
           this.setState({ value })
           dispatch('NAVIGATE', '#' + item.urlName)
@@ -65,6 +71,23 @@ module.exports = class SearchBox extends React.Component {
   }
 
   _onInputChange (e) {
-    this.setState({ value: e.target.value })
+    console.time('_onInputChange')
+
+    const value = e.target.value
+    const searchName = normalizeForSearch(value)
+
+    // create items for binary search
+    const startItem = { searchName }
+    const endItem = { searchName: searchName + '~' }
+
+    const { items } = this.props
+    const matchedItems = items.slice(
+      binarySearchBounds.ge(items, startItem, searchIndexSort),
+      binarySearchBounds.lt(items, endItem, searchIndexSort) + 1
+    )
+
+    this.setState({ value, matchedItems })
+
+    console.timeEnd('_onInputChange')
   }
 }
