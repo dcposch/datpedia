@@ -6,11 +6,12 @@ const SearchBox = require('./SearchBox.js')
  */
 module.exports = class ArticlePage extends React.Component {
   render () {
-    const {urlName, store, dispatch} = this.props
+    const {store, dispatch} = this.props
+    const {urlName} = store
 
     const name = decodeURIComponent(urlName.replace(/_/g, ' '))
 
-    const html = store.articleCache[name] || 'Loading...'
+    const html = store.articleCache[urlName] || 'Loading...'
 
     return (
       <div className='ArticlePage'>

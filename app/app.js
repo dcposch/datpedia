@@ -3,11 +3,12 @@ const SearchPage = require('./SearchPage.js')
 const ArticlePage = require('./ArticlePage.js')
 
 module.exports = function App (props) {
-  const {urlName, store, dispatch} = props
-  console.log('rendering', urlName)
+  const {store, dispatch} = props
+  const {urlName} = store
+  console.log('rendering', urlName || 'search page')
 
-  if (urlName) {
-    return <ArticlePage store={store} dispatch={dispatch} urlName={urlName} />
+  if (urlName != null) {
+    return <ArticlePage store={store} dispatch={dispatch} />
   } else {
     return <SearchPage store={store} dispatch={dispatch} />
   }

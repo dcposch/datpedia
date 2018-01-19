@@ -28,7 +28,6 @@ async function getFileData (fileName, zipFilePromise) {
  * Opens a ZipRandomAccessReader
  */
 async function openZip (zipPath, zipSize) {
-  // const zipFile = zipFromBufferAsync(RAW_ZIP, { lazyEntries: true })
   const reader = new ZipRandomAccessReader(zipPath)
   const zipFile = zipFromRandomAccessReaderAsync(
     reader,
@@ -40,6 +39,10 @@ async function openZip (zipPath, zipSize) {
 
 async function getFileData (zipFile, fileName) {
   const entry = await getEntry(zipFile, fileName)
+
+  if (entry == null) {
+    throw new Error('file not found: ' + fileName)
+  }
 
   const openReadStream = pify(zipFile.openReadStream.bind(zipFile))
   const readStream = await openReadStream(entry)
@@ -69,9 +72,6 @@ async function readEntries (zipFile) {
     zipFile.once('error', onError)
 
     function onEntry (entry) {
-      console.log('entry:')
-      console.log(entry)
-
       remainingEntries -= 1
 
       if (RE_DIRECTORY_NAME.test(entry.fileName)) {
@@ -104,6 +104,8 @@ async function readEntries (zipFile) {
   })
 }
 
+const PAGE_BITS = 16
+
 class ZipRandomAccessReader extends yauzl.RandomAccessReader {
   constructor (zipPath) {
     super()
@@ -111,23 +113,74 @@ class ZipRandomAccessReader extends yauzl.RandomAccessReader {
   }
 
   _readStreamForRange (start, end) {
-    const headers = new Headers({
-      'Range': `bytes=${start}-${end - 1}`
-    })
-
     const through = new stream.PassThrough()
 
-    // TODO: use simple-get (which uses john's stream-http internally) to
-    // return a proper stream back, instead of this solution which waits for
-    // the full range request to return before returning the data
-    window.fetch(this._zipPath, { headers })
-      .then(res => {
-        res.arrayBuffer()
-          .then(abuf => {
-            through.end(Buffer.from(abuf))
-          })
+    // Convert [start, end) to [start, end]
+    readBufsForRange(this._zipPath, start, end - 1)
+      .then((pages) => {
+        pages.forEach(page => through.write(page))
+        through.end()
       })
 
     return through
   }
+
+  /* read (buffer, offset, length, position, callback) {
+
+  } */
+}
+
+// TODO: LRU
+const _pagePromiseCache = []
+
+/**
+ * Reads bit range [start, end], inclusive. Returns buffers to concat.
+ */
+async function readBufsForRange (path, start, end) {
+  // Kick off any fetches not yet started
+  const pageStart = start >> PAGE_BITS
+  const pageEnd = end >> PAGE_BITS
+  for (let page = pageStart; page <= pageEnd; page++) {
+    let promise = _pagePromiseCache[page]
+    if (promise == null) {
+      promise = _pagePromiseCache[page] = readPage(path, page)
+    }
+  }
+
+  // Return buffers
+  const ret = new Array(pageEnd - pageStart + 1)
+  for (let page = pageStart; page <= pageEnd; page++) {
+    let buf = await _pagePromiseCache[page]
+    if (page === pageStart && page === pageEnd) {
+      buf = buf.slice(start - (page << PAGE_BITS), end - (page << PAGE_BITS) + 1)
+    } else if (page === pageStart) {
+      buf = buf.slice(start - (pageStart << PAGE_BITS), 1 << PAGE_BITS)
+    } else if (page === pageEnd) {
+      buf = buf.slice(0, end - (pageEnd << PAGE_BITS) + 1)
+    }
+    ret[page - pageStart] = buf
+  }
+  return ret
+}
+
+async function readPage (path, page) {
+  console.log('loading page ' + page)
+
+  const start = page << PAGE_BITS
+  const end = ((page + 1) << PAGE_BITS) - 1
+  const headers = new Headers({
+    'Range': `bytes=${start}-${end}`
+  })
+
+  // TODO: use simple-get (which uses john's stream-http internally) to
+  // return a proper stream back, instead of this solution which waits for
+  // the full range request to return before returning the data
+  const res = await window.fetch(path, { headers })
+  const abuf = await res.arrayBuffer()
+  const buf = Buffer.from(abuf)
+
+  console.log(`loaded ${start} to ${end}, ` +
+      `expected ${end - start + 1}b, got ${buf.length}b`)
+
+  return buf
 }
