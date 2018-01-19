@@ -18,7 +18,8 @@ module.exports = class SearchBox extends React.Component {
   render () {
     const {
       items = [],
-      onSelect = () => {}
+      autoFocus = false,
+      dispatch
     } = this.props
 
     return (
@@ -26,16 +27,14 @@ module.exports = class SearchBox extends React.Component {
         inputProps={{
           placeholder: 'search...',
           className: 'search',
-          autoFocus: true
+          autoFocus
         }}
         menuStyle={{
           padding: '0',
           position: 'fixed',
           overflow: 'auto'
         }}
-        wrapperStyle={{
-          display: 'block'
-        }}
+        wrapperProps={{className: 'SearchBox'}}
         items={items}
         shouldItemRender={(item, value) =>
           value.length !== 0 && item.searchName.indexOf(value) > -1
@@ -59,7 +58,7 @@ module.exports = class SearchBox extends React.Component {
         onChange={e => this._onInputChange(e)}
         onSelect={(value, item) => {
           this.setState({ value })
-          onSelect(item)
+          dispatch('NAVIGATE', '#' + item.urlName)
         }}
       />
     )

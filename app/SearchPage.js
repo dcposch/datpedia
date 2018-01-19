@@ -8,11 +8,10 @@ const SearchBox = require('./SearchBox.js')
 module.exports = class SearchPage extends React.Component {
   constructor (props) {
     super(props)
-    this._onSelectBound = this.onSelect.bind(this)
   }
 
   render () {
-    const { store } = this.props
+    const { store, dispatch } = this.props
 
     const styleGlobe = {
       position: 'absolute',
@@ -37,7 +36,7 @@ module.exports = class SearchPage extends React.Component {
     }
 
     return (
-      <div>
+      <div className='SearchPage'>
         <div style={styleBlur} >
           <div style={styleGlobe} />
         </div>
@@ -51,13 +50,8 @@ module.exports = class SearchPage extends React.Component {
           for the peer-to-peer web
         </h2>
 
-        <SearchBox items={store.searchIndex} onSelect={this._onSelectBound} />
+        <SearchBox items={store.searchIndex} dispatch={dispatch} autoFocus />
       </div>
     )
-  }
-
-  onSelect (item) {
-    const { dispatch } = this.props
-    dispatch('NAVIGATE', '#' + item.urlName)
   }
 }

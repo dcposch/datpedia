@@ -20,6 +20,7 @@ function init () {
   }
 
   initSearchIndex()
+  window.addEventListener('hashchange', render)
   render()
 }
 
@@ -103,9 +104,9 @@ async function initSearchIndex () {
 
 function render () {
   const {hash} = window.location
-  const article = (hash && hash.length > 1) ? hash.substring(1) : null
+  const urlName = (hash && hash.length > 1) ? hash.substring(1) : null
   const root = document.querySelector('#root')
-  const app = <App article={article} store={store} dispatch={dispatch} />
+  const app = <App urlName={urlName} store={store} dispatch={dispatch} />
   ReactDOM.render(app, root)
 }
 
@@ -114,7 +115,6 @@ function dispatch (action, data) {
   switch (action) {
     case 'NAVIGATE':
       window.location = data
-      render()
       return
     default:
       throw new Error('unknown action ' + action)

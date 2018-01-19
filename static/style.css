@@ -1,27 +1,45 @@
-/* article pages */
-body {
-   max-width: 600px;
+/* GLOBAL */
+
+* {
+  box-sizing: border-box;
+}
+
+/* ARTICLE PAGE */
+
+.ArticlePage {
+   min-width: 768px;
+   max-width: 768px;
    margin: 32px auto;
    font: 14px/24px sans-serif;
 }
 
-.h1-datpedia {
-  font-size: 48px;
-  padding: 16px 16px;
-  border-bottom: solid 4px black;
+.ArticlePage header {
+  font-size: 24px;
+  font-weight: bold;
 }
 
-.h1-datpedia a {
-  color: black;
+.ArticlePage header a {
+  display: inline-block;
+  width: 192px;
+}
+
+.ArticlePage .SearchBox {
+  display: inline-block;
+  width: 512px;
+}
+
+.ArticlePage header a:link,
+.ArticlePage header a:visited {
   text-decoration: none;
 }
 
-.h1-datpedia a:active {
-  color: #333;
-  text-decoration: none;
+.ArticlePage header a:hover,
+.ArticlePage header a:active {
+  text-decoration: underline;
 }
 
-/* search page */
+/* SEARCH PAGE */
+
 .SearchPage {
   max-width: 480px;
   margin: 32px auto;
@@ -37,7 +55,7 @@ body {
 .SearchPage h1 {
   font-size: 64px;
   padding: 32px;
-  margin: 96px 0 32px 0;
+  margin: 32px 0;
 }
 
 .SearchPage h2 {
@@ -52,7 +70,13 @@ body {
   width: 32px;
 }
 
-.SearchPage .search {
+.SearchPage .SearchBox {
+  width: 100%;
+}
+
+/* SEARCH BOX (ALL PAGES */
+
+.SearchBox input {
   border: 2px solid transparent;
   outline: 0;
   font-size: 24px;
@@ -62,21 +86,11 @@ body {
   width: 100%;
 }
 
-.SearchPage .search:focus {
+.SearchBox input:focus {
   border-color: black;
 }
 
-.SearchPage .searchItem {
+.SearchBox .searchItem {
   font-size: 24px;
   padding: 8px;
-}
-
-.SearchPage a:link,
-.SearchPage a:visited {
-  text-decoration: none;
-}
-
-.SearchPage a:hover,
-.SearchPage a:active {
-  text-decoration: underline;
 }
