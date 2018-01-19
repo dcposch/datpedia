@@ -17,9 +17,9 @@ function init () {
     console.log('Old web, not loading dat...')
   } else {
     initDat()
-    initSearchIndex()
-    registerServiceWorker()
   }
+
+  initSearchIndex()
   render()
 }
 
@@ -62,7 +62,13 @@ function initDat () {
 }
 
 async function initSearchIndex () {
-  const articlesStr = await store.archive.readFile('/list.txt')
+  const res = await window.fetch('/list.txt')
+  if (res.status !== 200) {
+    console.error('Error fetching list.txt', res)
+    return
+  }
+
+  const articlesStr = await res.text()
 
   let articles = articlesStr
     .split('\n')
