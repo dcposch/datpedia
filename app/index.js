@@ -3,11 +3,19 @@ const React = require('react')
 const ReactDOM = require('react-dom')
 
 const App = require('./App.js')
+
 const { searchIndexSort } = require('./util')
+const {openZip, getFileData} = require('./unzip.js')
+
+const ZIP_PATH = '/wiki.zip'
+const ZIP_SIZE = 1757653124
+
+const zipFilePromise = openZip(ZIP_PATH, ZIP_SIZE)
 
 const store = {
-  archive: null,
-  searchIndex: []
+  urlName: null, // null for the home page, or eg "Star_Wars" for that article
+  searchIndex: [], // list of available articles, search normalized and sorted
+  articleCache: {} // article HTML cache, eg "Star_Wars": "<html>..."
 }
 
 init()
@@ -20,18 +28,19 @@ function init () {
   }
 
   initSearchIndex()
-  window.addEventListener('hashchange', render)
-  render()
+
+  window.addEventListener('hashchange', routeAndRender)
+  routeAndRender()
 }
 
 function initDat () {
   // Get the url of the current archive
   const datUrl = window.location.origin
 
-  store.archive = new window.DatArchive(datUrl)
+  const archive = new window.DatArchive(datUrl)
 
   // Listen to network events, for debugging purposes...
-  const networkActivity = store.archive.createNetworkActivityStream()
+  const networkActivity = archive.createNetworkActivityStream()
 
   networkActivity.addEventListener('network-changed', ({connections}) => {
     console.log(connections, 'current peers')
@@ -47,12 +56,12 @@ function initDat () {
   })
 
   // Watch the search index for changes...
-  const searchActivity = store.archive.createFileActivityStream('/list.txt')
+  const searchActivity = archive.createFileActivityStream('/list.txt')
 
   // And when there's a change, download the new version of the file...
   searchActivity.addEventListener('invalidated', ({path}) => {
     console.log(path, 'has been invalidated, downloading the update')
-    store.archive.download(path)
+    archive.download(path)
   })
 
   // And when the download is done, use the new search index!
@@ -107,10 +116,8 @@ async function initSearchIndex () {
  */
 
 function render () {
-  const {hash} = window.location
-  const urlName = (hash && hash.length > 1) ? hash.substring(1) : null
   const root = document.querySelector('#root')
-  const app = <App urlName={urlName} store={store} dispatch={dispatch} />
+  const app = <App store={store} dispatch={dispatch} />
   ReactDOM.render(app, root)
 }
 
@@ -123,4 +130,22 @@ function dispatch (action, data) {
     default:
       throw new Error('unknown action ' + action)
   }
+}
+
+function routeAndRender () {
+  // Route
+  const {hash} = window.location
+  store.urlName = (hash && hash.length > 1) ? hash.substring(1) : null
+
+  // Start loading the article asynchronously
+  if (store.urlName != null) loadArticle(store.urlName)
+
+  // Render immediately
+  render()
+}
+
+async function loadArticle (urlName) {
+  const zipFile = await zipFilePromise
+  const html = await getFileData('/A/' + urlName + '.html', zipFile)
+  return html
 }

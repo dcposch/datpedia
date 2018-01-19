@@ -10,8 +10,7 @@ module.exports = class ArticlePage extends React.Component {
 
     const name = decodeURIComponent(urlName.replace(/_/g, ' '))
 
-    const {article} = store
-    const html = article == null ? '' : article.html
+    const html = store.articleCache[name] || 'Loading...'
 
     return (
       <div className='ArticlePage'>
