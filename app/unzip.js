@@ -17,10 +17,8 @@ module.exports = { openZip, getFile, readEntries }
  * Opens a zip file
  */
 async function openZip (zipPath) {
-  // TODO: use HEAD requests once Beaker supports them
+  // TODO: remove hardcode once Beaker supports HEAD requests
   // https://github.com/beakerbrowser/beaker/issues/826
-  // const zipSize = await fetchZipSize(zipPath)
-  // console.log('fetched zip size', zipSize)
 
   let zipSize = await fetchZipSize(zipPath)
   if (zipSize === 0) {

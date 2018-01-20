@@ -5,7 +5,7 @@ const { Comlink } = require('comlinkjs')
 
 const App = require('./app.js')
 const {openZip, getFile} = require('./unzip.js')
-const {nameFromUrlName} = require('./util.js')
+const {urlNameToName} = require('./util.js')
 const {findItem} = require('./search.js')
 
 const SEARCH_INDEX_PATHS = {
@@ -109,6 +109,8 @@ async function fetchSearchIndex (indexName) {
     indexName,
     searchIndex.length
   )
+
+  return searchIndex
 }
 
 function render () {
@@ -167,7 +169,7 @@ async function getEntryData (urlName) {
   // TODO: IndexedDB
 
   // First, find the search name
-  const name = nameFromUrlName(urlName)
+  const name = urlNameToName(urlName)
 
   // First, check the partial index
   const partial = await initSearchIndex('partial')
