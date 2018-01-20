@@ -4,7 +4,6 @@ const ReactDOM = require('react-dom')
 
 const App = require('./App.js')
 
-const { searchIndexSort } = require('./util')
 const {openZip, getFileData} = require('./unzip.js')
 
 const ZIP_PATH = '/wiki.zip'
@@ -103,9 +102,6 @@ async function initSearchIndex (listPath, indexName) {
         searchName
       }
     })
-    // TODO: remove this sort once list.txt is sorted correctly using this same
-    // sort function
-    .sort(searchIndexSort)
 
   store.searchIndexes[indexName] = searchIndex
 
