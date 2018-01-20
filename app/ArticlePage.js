@@ -19,7 +19,6 @@ module.exports = class ArticlePage extends React.Component {
           <a href='#'>datpedia</a>
           <SearchBox searchIndexes={searchIndexes} dispatch={dispatch} />
         </header>
-        <h1>{name}</h1>
         <div dangerouslySetInnerHTML={{__html: html}} />
       </div>
     )

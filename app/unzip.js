@@ -116,7 +116,7 @@ async function readEntries (zipFile) {
   })
 }
 
-const PAGE_BITS = 19
+const PAGE_BITS = 16
 
 class ZipRandomAccessReader extends yauzl.RandomAccessReader {
   constructor (zipPath) {
