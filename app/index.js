@@ -18,6 +18,7 @@ const zipFilePromise = openZip('/wiki.zip')
 
 const store = window.store = {
   urlName: null, // null for the home page, or eg "Star_Wars" for that article
+  citeNote: null,
   searchIndexes: {
     partial: [], // list of *top* articles, search normalized and sorted
     full: [], // list of *all* articles, search normalized and sorted
@@ -117,6 +118,29 @@ function render () {
   const root = document.querySelector('#root')
   const app = <App store={store} dispatch={dispatch} />
   ReactDOM.render(app, root)
+  maybeScrollToCiteNote()
+}
+
+function maybeScrollToCiteNote () {
+  const { citeNote } = store
+
+  // If no citation currently selected, do nothing
+  if (store.citeNote == null) return
+
+  const $citeNote = document.getElementById(citeNote)
+
+  // If no matching citation found, early return
+  if ($citeNote == null) return
+
+  // Clear the cite note so we don't scroll to it again if render() is called
+  // multiple times
+  store.citeNote = null
+
+  // Smoothly scroll to the citation location on page
+  $citeNote.scrollIntoView({
+    block: 'start',
+    inline: 'nearest'
+  })
 }
 
 function dispatch (action, data) {
@@ -133,7 +157,10 @@ function dispatch (action, data) {
 function routeAndRender () {
   // Route
   const {hash} = window.location
-  store.urlName = (hash && hash.length > 1) ? hash.substring(1) : null
+  const parts = hash.split('#')
+  store.urlName = parts[1] || null
+  store.citeNote = parts[2] || null
+
   console.log('routing', store.urlName)
 
   // Start loading the article asynchronously
