@@ -1,4 +1,4 @@
-const {openZip, getFileData} = require('./unzip.js')
+const {openZip, getFile} = require('./unzip.js')
 
 /* global Response, URL, Headers, fetch */
 
@@ -38,7 +38,7 @@ global.addEventListener('fetch', event => {
 })
 
 async function getResponse (fileName) {
-  const fileData = await getFileData(fileName, zipFilePromise)
+  const fileData = await getFile(fileName, zipFilePromise)
   const response = new Response(fileData.toString())
   return response
 }

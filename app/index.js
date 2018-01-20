@@ -4,7 +4,7 @@ const webworkify = require('webworkify')
 const { Comlink } = require('comlinkjs')
 
 const App = require('./app.js')
-const {openZip, getFileData} = require('./unzip.js')
+const {openZip, getFile} = require('./unzip.js')
 
 const SEARCH_INDEX_PATHS = {
   partial: '/list.txt',
@@ -141,7 +141,7 @@ async function loadArticle (urlName) {
 
   console.log(`loading article ${urlName}`)
   const zipFile = await zipFilePromise
-  const html = await getFileData(zipFile, 'A/' + urlName + '.html')
+  const html = await getFile(zipFile, 'A/' + urlName + '.html')
   console.log(`loaded article ${urlName}, got ${html && html.length} b`)
   store.articleCache[urlName] = html
 

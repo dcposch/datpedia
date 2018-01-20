@@ -11,7 +11,7 @@ global.setImmediate = process.nextTick.bind(process)
 const concatAsync = pify(concat)
 const zipFromRandomAccessReaderAsync = pify(yauzl.fromRandomAccessReader)
 
-module.exports = { openZip, getFileData, readEntries }
+module.exports = { openZip, getFile, readEntries }
 
 /**
  * Opens a zip file
@@ -39,8 +39,8 @@ async function fetchZipSize (zipPath) {
 /**
  * Given a zip file and a filename, extracts file data
  */
-async function getFileData (zipFile, fileName) {
-  const entry = await getEntry(zipFile, fileName)
+async function getFile (zipFile, fileName) {
+  const entry = await findEntry(zipFile, fileName)
 
   if (entry == null) {
     throw new Error('file not found: ' + fileName)
@@ -53,7 +53,7 @@ async function getFileData (zipFile, fileName) {
   return fileData
 }
 
-async function getEntry (zipFile, fileName) {
+async function findEntry (zipFile, fileName) {
   const entries = await zipFile._entriesPromise
   console.log(entries[0].fileName)
   const entry = entries.find(entry => entry.fileName === fileName)
