@@ -9,6 +9,26 @@ function getImageUrls (html) {
   return getGroup1(html, re)
 }
 
+function rewriteImageUrls (html, func) {
+  const re = /<img([^>]*) src="([^"]*)"/g
+
+  const ret = []
+  let lastIndex = 0
+  let m
+  while ((m = re.exec(html)) != null) {
+    ret.push(html.substring(lastIndex, re.lastIndex))
+    ret.push('<img')
+    ret.push(m[1])
+    ret.push(' src="')
+    ret.push(func(m[2]))
+    ret.push('"')
+    lastIndex = re.lastIndex + m[0].length
+  }
+  ret.push(html.substring(lastIndex))
+
+  return ret.join('')
+}
+
 function getGroup1 (text, re) {
   const ret = []
   let m

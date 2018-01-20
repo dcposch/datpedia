@@ -19,17 +19,12 @@ echo "DOWNLOADING..."
 echo "EXTRACTING..."
 ./scripts/extract.sh $1
 
-echo "SUBSETTING..."
-./scripts/subset.js $1 ./most-viewed/list.txt
+echo "TRANSFORMING..."
+./scripts/transform.sh $1
 
 echo "BUILDING THE WEB APP..."
-npm run build
-cp ./most-viewed/list.txt ./subset/
-cp -r ./static/* ./subset/
-
-# echo "ORGANIZING..."
-# ./scripts/organize.sh $1
+./scripts/build.sh $1
 
 echo "DONE"
 echo "To update Datpedia, run:"
-echo "dat share -d subset/ --watch=false"
+echo "dat share -d build/$1 --watch=false"

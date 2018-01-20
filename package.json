@@ -13,6 +13,7 @@
   "dependencies": {
     "binary-search-bounds": "^2.0.3",
     "brfs": "^1.4.3",
+    "datauri": "^1.0.5",
     "eslint": "^3.19.0",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-node": "^5.2.1",

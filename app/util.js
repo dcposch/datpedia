@@ -12,3 +12,11 @@ exports.searchIndexSort = (item1, item2) => {
     ? -1
     : 1
 }
+
+exports.urlNameToName = (urlName) => {
+  let name = urlName.replace(/_/g, ' ')
+  try {
+    name = decodeURIComponent(name)
+  } catch (_) {}
+  return name
+}
