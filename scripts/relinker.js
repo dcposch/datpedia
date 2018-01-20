@@ -1,16 +1,16 @@
 
 function getLinks (html) {
-  const re = /<a[^>]* href="([^"]*)"/g
+  const re = /<a[^>]* href="([^"]*)"/gm
   return getGroup1(html, re)
 }
 
 function getImageUrls (html) {
-  const re = /<img[^>]* src="([^"]*)"/g
+  const re = /<img[^>]* src="([^"]*)"/gm
   return getGroup1(html, re)
 }
 
 function rewriteImageUrls (html, func) {
-  const re = /<img([^>]*) src="([^"]*)"/g
+  const re = /<img([^>]*) src="([^"]*)"/gm
 
   const ret = []
   let lastIndex = 0

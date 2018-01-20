@@ -83,11 +83,10 @@ function transformHtml (html) {
       } else {
         return line
       }
-
-      line = rewriteImageUrls(line, transformImageUrl)
     })
 
-  return newLines.join('\n')
+  const newHtml = newLines.join('\n')
+  return rewriteImageUrls(newHtml, transformImageUrl)
 }
 
 // Transforms image urls to data:// URIs
