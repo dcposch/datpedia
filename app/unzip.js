@@ -22,13 +22,12 @@ async function openZip (zipPath) {
   // const zipSize = await fetchZipSize(zipPath)
   // console.log('fetched zip size', zipSize)
 
-  let zipSize
-  try {
-    zipSize = await fetchZipSize(zipPath)
-    console.log('fetched zip size: ' + zipSize)
-  } catch (_) {
+  let zipSize = await fetchZipSize(zipPath)
+  if (zipSize === 0) {
     zipSize = 3470744536
     console.log('fallback hardcoded zip size: ' + zipSize)
+  } else {
+    console.log('fetched zip size: ' + zipSize)
   }
 
   const reader = new ZipRandomAccessReader(zipPath)
@@ -123,7 +122,7 @@ async function readEntries (zipFile) {
   })
 }
 
-const PAGE_SIZE = 1 << 16
+const PAGE_SIZE = 1 << 18
 
 class ZipRandomAccessReader extends yauzl.RandomAccessReader {
   constructor (zipPath) {
