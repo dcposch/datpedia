@@ -1,6 +1,7 @@
 const React = require('react')
 
 const SearchBox = require('./SearchBox.js')
+const Globe = require('./Globe.js')
 
 /**
  * Search page; doubles as the Datpedia homepage.
@@ -34,6 +35,8 @@ module.exports = class SearchPage extends React.Component {
 
     return (
       <div className='SearchPage'>
+        <Globe />
+
         <div style={styleBlur} >
           <div style={styleGlobe} />
         </div>
