@@ -73,8 +73,16 @@ function transformHtml (html, dumpName, pageUrlName) {
 function transformImageUrl (url, dumpName) {
   if (!url.startsWith('../I/m')) return url
 
-  const imagePath = decodeURIComponent(url.substring(3))
-  const dataURI = dataUriSync('extract/' + dumpName + '/' + imagePath)
+  const imageFileName = decodeURIComponent(url.substring(3))
+  const path = 'extract/' + dumpName + '/' + imageFileName
+  let dataURI
+  try {
+    dataURI = dataUriSync(path)
+  } catch (e) {
+    console.log('failed to turn image into data URI', path, e)
+    dataURI = 'data:image/gif;base64,' +
+     'R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+  }
   return dataURI
 }
 
