@@ -17,8 +17,12 @@ module.exports = { openZip, getFile, readEntries }
  * Opens a zip file
  */
 async function openZip (zipPath) {
-  const zipSize = await fetchZipSize(zipPath)
-  console.log('fetched zip size', zipSize)
+  // TODO: use HEAD requests once Beaker supports them
+  // https://github.com/beakerbrowser/beaker/issues/826
+  // const zipSize = await fetchZipSize(zipPath)
+  // console.log('fetched zip size', zipSize)
+
+  const zipSize = 3470744536
 
   const reader = new ZipRandomAccessReader(zipPath)
   const zipFile = await zipFromRandomAccessReaderAsync(
