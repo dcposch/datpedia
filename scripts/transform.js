@@ -3,10 +3,8 @@
 const fs = require('fs')
 const mkdirpSync = require('mkdirp').sync
 const dataUriSync = require('datauri').sync
-const normForSearch = require('normalize-for-search')
 
 const {rewriteImageUrls, rewriteLinks} = require('./relinker.js')
-const {searchIndexSort, urlNameToName} = require('../app/util.js')
 
 if (process.argv.length !== 3) {
   console.log('Usage: ./scripts/transform.js <name>')
@@ -27,26 +25,6 @@ function main (name) {
     .map(s => s.substring(0, s.length - '.html'.length))
 
   articles.forEach(article => transferArticle(name, article, dstA))
-
-  console.log('creating list-all.json')
-
-  const topArticles = fs.readFileSync('most-viewed/list.txt', 'utf8')
-    .split(/\n/g).filter(s => s.length > 0)
-  writeSortedArticleJson(topArticles, dst + '/list-partial.json')
-  writeSortedArticleJson(articles, dst + '/list-full.json')
-}
-
-function writeSortedArticleJson (articles, path) {
-  const index = articles.map(a => {
-    const urlName = a
-    const name = urlNameToName(urlName)
-    const searchName = normForSearch(name)
-    return {urlName, name, searchName}
-  })
-
-  index.sort(searchIndexSort)
-
-  fs.writeFileSync(path, JSON.stringify(index))
 }
 
 function transferArticle (dumpName, name, dst) {

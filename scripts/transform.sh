@@ -6,5 +6,7 @@ if [ -d transform/$1 ]; then
 else
   time ./scripts/transform.js $1
   cd transform/$1
-  zip -r wiki.zip A
+  time zip -r wiki.zip A
+  cd ../..
+  time ./scripts/list.js $1
 fi
