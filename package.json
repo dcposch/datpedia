@@ -24,7 +24,7 @@
     "react-dom": "^16.2.0",
     "simple-concat": "^1.0.0",
     "webworkify": "^1.5.0",
-    "yauzl": "^2.9.1",
+    "yauzl": "dcposch/yauzl",
     "zimmer": "^1.1.0"
   },
   "devDependencies": {
