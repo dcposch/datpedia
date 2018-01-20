@@ -22,17 +22,17 @@ dd {
   font-size: 24px;
   font-weight: bold;
   padding-bottom: 8px;
-  border-bottom: 2px solid black;
-}
-
-.ArticlePage header a {
-  display: inline-block;
-  width: 192px;
 }
 
 .ArticlePage .SearchBox {
   display: inline-block;
   width: 408px;
+}
+
+.ArticlePage header a {
+  display: inline-block;
+  width: 192px;
+  color: #000;
 }
 
 .ArticlePage header a:link,
@@ -48,6 +48,11 @@ dd {
 
 /* ARTICLE BODY */
 
+.ArticleBody {
+  padding-top: 64px;
+  border-top: 2px solid black;
+}
+
 .ArticlePage .mw-body {
   padding: 0 !important;
   font-size: 16px;
@@ -60,16 +65,16 @@ dd {
 }
 
 .ArticlePage #titleHeading {
-  margin: 64px 0 32px 0 !important;
+  margin: 0 0 32px 0 !important;
 }
 
 .ArticlePage .thumb {
   display: inline-block;
-  margin: 0 16px 16px 0;
+  margin: 0 24px 24px 0;
   vertical-align: top;
 }
 
-.SearchBox input {
+.ArticlePage .SearchBox input {
   padding: 8px 32px;
 }
 
