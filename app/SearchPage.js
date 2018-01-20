@@ -17,7 +17,7 @@ module.exports = class SearchPage extends React.Component {
       left: '10%',
       bottom: 0,
       right: '10%',
-      // backgroundImage: 'url(./sphere.gif)',
+      backgroundImage: 'url(./sphere.gif)',
       backgroundSize: 'cover',
       backgroundRepeat: 'no-repeat',
       zIndex: -2
@@ -35,8 +35,6 @@ module.exports = class SearchPage extends React.Component {
 
     return (
       <div className='SearchPage'>
-        <Globe />
-
         <div style={styleBlur} >
           <div style={styleGlobe} />
         </div>
