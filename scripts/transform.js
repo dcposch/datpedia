@@ -60,11 +60,11 @@ function transferArticle (dumpName, name, dst) {
   console.log('transferring %s', name)
 
   const html = fs.readFileSync(filename, 'utf8')
-  const newHtml = transformHtml(html, dumpName)
+  const newHtml = transformHtml(html, dumpName, name)
   fs.writeFileSync(dst + '/' + name + '.html', newHtml)
 }
 
-function transformHtml (html, dumpName) {
+function transformHtml (html, dumpName, pageUrlName) {
   const lines = html.split(/\n/g).map(s => s.trim())
 
   let foundStylesheet = false
@@ -87,7 +87,7 @@ function transformHtml (html, dumpName) {
 
   let newHtml = newLines.join('\n')
   newHtml = rewriteImageUrls(newHtml, url => transformImageUrl(url, dumpName))
-  newHtml = rewriteLinks(newHtml, url => transformLink(url))
+  newHtml = rewriteLinks(newHtml, url => transformLink(url, pageUrlName))
   return newHtml
 }
 
@@ -100,13 +100,19 @@ function transformImageUrl (url, dumpName) {
   return dataURI
 }
 
-function transformLink (url) {
-  if (url.startsWith('http://') || url.startsWith('https://')) {
+function transformLink (url, pageUrlName) {
+  // Leave external links alone
+  if (url === '' || url.startsWith('http://') || url.startsWith('https://')) {
     return url
+  }
+  if (url.startsWith('#')) {
+    // Cite notes, etc. Rewrite "#cite_note-1" to '#Hypertext#cite_note-1'
+    return '#' + pageUrlName + url
   }
   if (!url.endsWith('.html')) {
     console.log('skipping non-standard link: ' + url)
     return url
   }
+  // Wiki links. Rewrite 'Anarchism.html' to '#Anarchism'
   return '#' + url.substring(0, url.length - '.html'.length)
 }
