@@ -6,5 +6,8 @@ transform/
 build/
 
 static/bundle.js
+static/wiki.zip
+static/list-full.json
+static/list-partial.json
 
 .cache/

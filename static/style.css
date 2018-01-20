@@ -63,6 +63,16 @@ dd {
   margin: 64px 0 32px 0 !important;
 }
 
+.ArticlePage .thumb {
+  display: inline-block;
+  margin: 0 16px 16px 0;
+  vertical-align: top;
+}
+
+.SearchBox input {
+  padding: 8px 32px;
+}
+
 
 /* SEARCH PAGE */
 
@@ -92,8 +102,8 @@ dd {
 
 .SearchPage hr {
   border: none;
-  border-bottom: 2px solid #000;
-  width: 32px;
+  border-bottom: 3px solid #333;
+  width: 40px;
 }
 
 .SearchPage .SearchBox {
