@@ -32,11 +32,11 @@ function main (name) {
 
   const topArticles = fs.readFileSync('most-viewed/list.txt', 'utf8')
     .split(/\n/g).filter(s => s.length > 0)
-  writeSortedArticleJson(topArticles, 'list-partial.json')
-  writeSortedArticleJson(articles, 'list-full.json')
+  writeSortedArticleJson(topArticles, dst + '/list-partial.json')
+  writeSortedArticleJson(articles, dst + '/list-full.json')
 }
 
-function writeSortedArticleJson (articles, filename) {
+function writeSortedArticleJson (articles, path) {
   const index = articles.map(a => {
     const urlName = a
     const name = urlNameToName(urlName)
@@ -46,7 +46,7 @@ function writeSortedArticleJson (articles, filename) {
 
   index.sort(searchIndexSort)
 
-  fs.writeFileSync(dst + '/' + filename, JSON.stringify(index))
+  fs.writeFileSync(path, JSON.stringify(index))
 }
 
 function transferArticle (dumpName, name, dst) {
