@@ -22,7 +22,14 @@ async function openZip (zipPath) {
   // const zipSize = await fetchZipSize(zipPath)
   // console.log('fetched zip size', zipSize)
 
-  const zipSize = 3470744536
+  let zipSize
+  try {
+    zipSize = await fetchZipSize(zipPath)
+    console.log('fetched zip size: ' + zipSize)
+  } catch (_) {
+    zipSize = 3470744536
+    console.log('fallback hardcoded zip size: ' + zipSize)
+  }
 
   const reader = new ZipRandomAccessReader(zipPath)
   const zipFile = await zipFromRandomAccessReaderAsync(
@@ -116,7 +123,7 @@ async function readEntries (zipFile) {
   })
 }
 
-const PAGE_BITS = 16
+const PAGE_SIZE = 1 << 16
 
 class ZipRandomAccessReader extends yauzl.RandomAccessReader {
   constructor (zipPath) {
@@ -155,8 +162,8 @@ class ZipRandomAccessReader extends yauzl.RandomAccessReader {
  */
 async function readBufsForRange (reader, start, end) {
   // Kick off any fetches not yet started
-  const pageStart = start >> PAGE_BITS
-  const pageEnd = end >> PAGE_BITS
+  const pageStart = Math.floor(start / PAGE_SIZE)
+  const pageEnd = Math.floor(end / PAGE_SIZE)
   for (let page = pageStart; page <= pageEnd; page++) {
     let promise = reader._pagePromiseCache[page]
     if (promise == null) {
@@ -170,11 +177,11 @@ async function readBufsForRange (reader, start, end) {
     const promise = reader._pagePromiseCache[page]
     let buf = await promise
     if (page === pageStart && page === pageEnd) {
-      buf = buf.slice(start - (page << PAGE_BITS), end - (page << PAGE_BITS) + 1)
+      buf = buf.slice(start - (page * PAGE_SIZE), end - (page * PAGE_SIZE) + 1)
     } else if (page === pageStart) {
-      buf = buf.slice(start - (pageStart << PAGE_BITS), 1 << PAGE_BITS)
+      buf = buf.slice(start - (pageStart * PAGE_SIZE), 1 * PAGE_SIZE)
     } else if (page === pageEnd) {
-      buf = buf.slice(0, end - (pageEnd << PAGE_BITS) + 1)
+      buf = buf.slice(0, end - (pageEnd * PAGE_SIZE) + 1)
     }
     ret[page - pageStart] = buf
   }
@@ -184,8 +191,8 @@ async function readBufsForRange (reader, start, end) {
 async function readPage (reader, page) {
   console.log('loading page ' + page)
 
-  const start = page << PAGE_BITS
-  const end = ((page + 1) << PAGE_BITS) - 1
+  const start = page * PAGE_SIZE
+  const end = ((page + 1) * PAGE_SIZE) - 1
   const headers = new Headers({
     'Range': `bytes=${start}-${end}`
   })
