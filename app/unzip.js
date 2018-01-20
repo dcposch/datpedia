@@ -1,3 +1,5 @@
+/* global Headers */
+
 const pify = require('pify')
 const yauzl = require('yauzl')
 const concat = require('simple-concat')
@@ -12,31 +14,22 @@ const zipFromRandomAccessReaderAsync = pify(yauzl.fromRandomAccessReader)
 module.exports = { openZip, getFileData, readEntries }
 
 /**
- * Given a filename and a loaded (or loading) ZipRandomAccessReader,
- * extracts file data.
- */
-async function getFileData (fileName, zipFilePromise) {
-  const zipFile = await zipFilePromise
-
-  // zip entries don't have leading slash
-  if (fileName[0] === '/') fileName = fileName.slice(1)
-
-  const fileData = await getFileData(zipFile, fileName)
-}
-
-/**
- * Opens a ZipRandomAccessReader
+ * Opens a zip file
  */
 async function openZip (zipPath, zipSize) {
   const reader = new ZipRandomAccessReader(zipPath)
-  const zipFile = zipFromRandomAccessReaderAsync(
+  const zipFile = await zipFromRandomAccessReaderAsync(
     reader,
     zipSize,
     { lazyEntries: true }
   )
+  zipFile._entriesPromise = readEntries(zipFile)
   return zipFile
 }
 
+/**
+ * Given a zip file and a filename, extracts file data
+ */
 async function getFileData (zipFile, fileName) {
   const entry = await getEntry(zipFile, fileName)
 
@@ -52,9 +45,15 @@ async function getFileData (zipFile, fileName) {
 }
 
 async function getEntry (zipFile, fileName) {
-  const entries = await readEntries(zipFile)
+  const entries = await zipFile._entriesPromise
   console.log(entries[0].fileName)
   const entry = entries.find(entry => entry.fileName === fileName)
+  // const entry2 = Object.create(yauzl.Entry.prototype, {
+  //   compressedSize: { value: entry.compressedSize },
+  //   relativeOffsetOfLocalHeader: { value: entry.relativeOffsetOfLocalHeader },
+  //   compressionMethod: { value: entry.compressionMethod },
+  //   generalPurposeBitFlag: { value: entry.generalPurposeBitFlag }
+  // })
   return entry
 }
 
@@ -104,19 +103,20 @@ async function readEntries (zipFile) {
   })
 }
 
-const PAGE_BITS = 16
+const PAGE_BITS = 19
 
 class ZipRandomAccessReader extends yauzl.RandomAccessReader {
   constructor (zipPath) {
     super()
     this._zipPath = zipPath
+    this._pagePromiseCache = []
   }
 
   _readStreamForRange (start, end) {
     const through = new stream.PassThrough()
 
     // Convert [start, end) to [start, end]
-    readBufsForRange(this._zipPath, start, end - 1)
+    readBufsForRange(this, start, end - 1)
       .then((pages) => {
         pages.forEach(page => through.write(page))
         through.end()
@@ -126,7 +126,7 @@ class ZipRandomAccessReader extends yauzl.RandomAccessReader {
   }
 
   read (buffer, offset, length, position, callback) {
-    readBufsForRange(this._zipPath, position, position + length - 1)
+    readBufsForRange(this, position, position + length - 1)
       .then(pages => {
         pages.forEach(page => {
           page.copy(buffer, offset)
@@ -137,27 +137,24 @@ class ZipRandomAccessReader extends yauzl.RandomAccessReader {
   }
 }
 
-// TODO: LRU
-const _pagePromiseCache = []
-
 /**
  * Reads bit range [start, end], inclusive. Returns buffers to concat.
  */
-async function readBufsForRange (path, start, end) {
+async function readBufsForRange (reader, start, end) {
   // Kick off any fetches not yet started
   const pageStart = start >> PAGE_BITS
   const pageEnd = end >> PAGE_BITS
   for (let page = pageStart; page <= pageEnd; page++) {
-    let promise = _pagePromiseCache[page]
+    let promise = reader._pagePromiseCache[page]
     if (promise == null) {
-      promise = _pagePromiseCache[page] = readPage(path, page)
+      promise = reader._pagePromiseCache[page] = readPage(reader, page)
     }
   }
 
   // Return buffers
   const ret = new Array(pageEnd - pageStart + 1)
   for (let page = pageStart; page <= pageEnd; page++) {
-    const promise = _pagePromiseCache[page]
+    const promise = reader._pagePromiseCache[page]
     let buf = await promise
     if (page === pageStart && page === pageEnd) {
       buf = buf.slice(start - (page << PAGE_BITS), end - (page << PAGE_BITS) + 1)
@@ -171,7 +168,7 @@ async function readBufsForRange (path, start, end) {
   return ret
 }
 
-async function readPage (path, page) {
+async function readPage (reader, page) {
   console.log('loading page ' + page)
 
   const start = page << PAGE_BITS
@@ -183,7 +180,7 @@ async function readPage (path, page) {
   // TODO: use simple-get (which uses john's stream-http internally) to
   // return a proper stream back, instead of this solution which waits for
   // the full range request to return before returning the data
-  const res = await window.fetch(path, { headers })
+  const res = await window.fetch(reader._zipPath, { headers })
   const abuf = await res.arrayBuffer()
   const buf = Buffer.from(abuf)
 

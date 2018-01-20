@@ -1,15 +1,21 @@
-const normalizeForSearch = require('normalize-for-search')
 const React = require('react')
 const ReactDOM = require('react-dom')
+const webworkify = require('webworkify')
+const { Comlink } = require('comlinkjs')
 
-const App = require('./App.js')
-
+const App = require('./app.js')
 const {openZip, getFileData} = require('./unzip.js')
 
 const ZIP_PATH = '/wiki.zip'
-// const ZIP_SIZE = 1757653124 // Simple English Wiki
-const ZIP_SIZE = 4176011 // Ray Charles
+const ZIP_SIZE = 370423696 // Simple English Wiki
+// const ZIP_SIZE = 4176011 // Ray Charles
 
+const SEARCH_INDEX_PATHS = {
+  partial: '/list.txt',
+  full: '/list-all.txt'
+}
+
+const worker = Comlink.proxy(webworkify(require('./worker.js')))
 const zipFilePromise = openZip(ZIP_PATH, ZIP_SIZE)
 
 const store = window.store = {
@@ -33,8 +39,8 @@ async function init () {
   window.addEventListener('hashchange', routeAndRender)
   routeAndRender()
 
-  await initSearchIndex('/list.txt', 'partial')
-  await initSearchIndex('/list-all.txt', 'full')
+  await initSearchIndex('partial')
+  await initSearchIndex('full')
 }
 
 function initDat () {
@@ -60,10 +66,9 @@ function initDat () {
   })
 
   // Watch the search index for changes...
-  const searchActivity = archive.createFileActivityStream([
-    '/list.txt',
-    '/list-all.txt'
-  ])
+  const searchActivity = archive.createFileActivityStream(
+    Object.values(SEARCH_INDEX_PATHS)
+  )
 
   // And when there's a change, download the new version of the file...
   searchActivity.addEventListener('invalidated', ({path}) => {
@@ -74,42 +79,9 @@ function initDat () {
   // And when the download is done, use the new search index!
   searchActivity.addEventListener('changed', ({path}) => {
     console.log(path, 'has changed')
-    if (path === '/list.txt') initSearchIndex(path, 'partial')
-    if (path === '/list-all.txt') initSearchIndex(path, 'full')
+    if (path === SEARCH_INDEX_PATHS.partial) initSearchIndex('partial')
+    if (path === SEARCH_INDEX_PATHS.full) initSearchIndex('full')
   })
-}
-
-async function initSearchIndex (listPath, indexName) {
-  const res = await window.fetch(listPath)
-  if (res.status !== 200) {
-    console.error('Error fetching list.txt', res)
-    return
-  }
-
-  const articlesStr = await res.text()
-
-  let articles = articlesStr
-    .split('\n')
-    .slice(0, -1) // remove extra empty item caused by trailing \n
-
-  const searchIndex = articles
-    .map(urlName => {
-      const name = urlName.replace(/_/g, ' ')
-      const searchName = normalizeForSearch(name)
-      return {
-        urlName,
-        name,
-        searchName
-      }
-    })
-
-  store.searchIndexes[indexName] = searchIndex
-
-  console.log(
-    'loaded search index %s, %d entries',
-    indexName,
-    store.searchIndexes[indexName].length
-  )
 }
 
 /**
@@ -124,6 +96,17 @@ async function initSearchIndex (listPath, indexName) {
  *   )
  * }
  */
+async function initSearchIndex (indexName) {
+  const indexPath = SEARCH_INDEX_PATHS[indexName]
+  const url = window.location.origin + indexPath
+  const searchIndex = await worker.fetchSearchIndex(url)
+  store.searchIndexes[indexName] = searchIndex
+  console.log(
+    'loaded search index %s, %d entries',
+    indexName,
+    searchIndex.length
+  )
+}
 
 function render () {
   const root = document.querySelector('#root')
