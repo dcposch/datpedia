@@ -5,6 +5,10 @@ cd .. && tar -czvf - \
   --exclude='datpedia/transform' \
   --exclude='datpedia/list' \
   --exclude='datpedia/build' \
+  --exclude='datpedia/.git' \
+  --exclude='datpedia/static/wiki.zip' \
+  --exclude='datpedia/static/list-full.json' \
+  --exclude='datpedia/static/list-partial.json' \
   datpedia | ssh datpedia.us-east-1.aws "cd /mnt/disk && tar -xzvf -"
 cd datpedia
 echo "done"

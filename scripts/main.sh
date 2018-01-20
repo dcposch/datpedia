@@ -27,4 +27,4 @@ echo "BUILDING THE WEB APP..."
 
 echo "DONE"
 echo "To update Datpedia, run:"
-echo "dat share -d build/$1 --watch=false"
+echo "dat share -d build/$1"
