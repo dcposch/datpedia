@@ -3,7 +3,7 @@ const ReactDOM = require('react-dom')
 const webworkify = require('webworkify')
 const { Comlink } = require('comlinkjs')
 
-const App = require('./app.js')
+const App = require('./App.js')
 const {openZip, getFile} = require('./unzip.js')
 const {urlNameToName} = require('./util.js')
 const {findItem} = require('./search.js')

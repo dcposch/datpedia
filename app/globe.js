@@ -49,7 +49,8 @@ module.exports = class Globe extends React.Component {
       top: 0,
       left: 0,
       bottom: 0,
-      right: 0
+      right: 0,
+      zIndex: -1
     }
     return (
       <svg
@@ -69,17 +70,24 @@ module.exports = class Globe extends React.Component {
     const nla = this._nlat
     const nlo = this._nlon
 
+    const xmlns = 'http://www.w3.org/2000/svg'
     for (let i = 0; i < nla; i++) {
       for (let j = 0; j < nlo; j++) {
         const lines = []
         for (let k = 0; k < 1 + (i < nla - 1 ? 1 : 0); k++) {
-          const li = svg.createElement('line')
-          svg.appendChild(li)
-          lines.push(li)
+          const line = document.createElementNS(xmlns, 'line')
+
+          line.setAttribute('stroke', 'black')
+          line.setAttribute('stroke-width', '1.5')
+
+          svg.appendChild(line)
+          lines.push(line)
         }
         this._svgLines[i * nlo + j] = lines
       }
     }
+
+    this.frame()
   }
 
   frame () {
@@ -94,7 +102,7 @@ module.exports = class Globe extends React.Component {
       for (let j = 0; j < nlo; j++) {
         const p00 = this.getPoint(i, j)
         const p01 = this.getPoint(i, (j + 1) % nlo)
-        const lines = this._lines[i * nlo + j]
+        const lines = this._svgLines[i * nlo + j]
         setLine(lines[0], p00, p01)
 
         if (i < nla - 1) {
@@ -116,8 +124,8 @@ module.exports = class Globe extends React.Component {
 function setLine (line, pA, pB) {
   // TODO: projection matrix
 
-  line.x0 = pA[0] * 200 + 400
-  line.x1 = pA[1] * 200 + 400
-  line.x0 = pB[0] * 200 + 400
-  line.x1 = pB[1] * 200 + 400
+  line.setAttribute('x1', pA[0] * 200 + 400)
+  line.setAttribute('y1', pA[1] * 200 + 400)
+  line.setAttribute('x2', pB[0] * 200 + 400)
+  line.setAttribute('y2', pB[1] * 200 + 400)
 }
