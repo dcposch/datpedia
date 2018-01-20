@@ -11,7 +11,7 @@ module.exports = class ArticlePage extends React.Component {
 
     const name = urlName.replace(/_/g, ' ')
 
-    const html = articleCache[urlName] || 'Loading...'
+    const html = articleCache[urlName]
 
     return (
       <div className='ArticlePage'>
@@ -19,7 +19,11 @@ module.exports = class ArticlePage extends React.Component {
           <a href='#'>datpedia</a>
           <SearchBox searchIndexes={searchIndexes} dispatch={dispatch} />
         </header>
-        <div dangerouslySetInnerHTML={{__html: html}} />
+        { html != null && (<div
+          className='ArticleBody'
+          dangerouslySetInnerHTML={{__html: html}} />)
+        }
+        { html == null && <div><h1>{name}</h1><p>Loading...</p></div> }
       </div>
     )
   }

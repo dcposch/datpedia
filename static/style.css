@@ -38,6 +38,14 @@
   text-decoration: underline;
 }
 
+
+/* ARTICLE BODY */
+
+.ArticlePage .mw-body {
+  padding: 0 !important;
+}
+
+
 /* SEARCH PAGE */
 
 .SearchPage {
