@@ -7,8 +7,8 @@ const App = require('./app.js')
 const {openZip, getFile} = require('./unzip.js')
 
 const SEARCH_INDEX_PATHS = {
-  partial: '/list.txt',
-  full: '/list-all.txt'
+  partial: '/list-partial.json',
+  full: '/list-full.json'
 }
 
 const worker = Comlink.proxy(webworkify(require('./worker.js')))
