@@ -1,9 +1,11 @@
+const binarySearchBounds = require('binary-search-bounds')
+const normalizeForSearch = require('normalize-for-search')
 const React = require('react')
 const ReactAutocomplete = require('react-autocomplete')
-const normalizeForSearch = require('normalize-for-search')
-const binarySearchBounds = require('binary-search-bounds')
 
 const { searchIndexSort } = require('./util')
+
+const NUM_RESULTS = 5
 
 /**
  * Shows a typeahead search box over a given list of items.
@@ -74,20 +76,51 @@ module.exports = class SearchBox extends React.Component {
     console.time('_onInputChange')
 
     const value = e.target.value
+
+    if (value === '') {
+      this.setState({ value, matchedItems: [] })
+      return
+    }
+
+    const partialIndexItems = this._search('partial', value)
+      .slice(0, NUM_RESULTS)
+
+    // Skip full search if we already have enough results from the partial index
+    const fullIndexItems = this._search('full', value)
+      .slice(0, NUM_RESULTS)
+      .filter(fullItem => {
+        // Dedupe, since the same result may be in the partial index
+        const inPartialIndex = partialIndexItems.find(partialItem => {
+          return partialItem.urlName === fullItem.urlName
+        })
+        return !inPartialIndex
+      })
+
+    const matchedItems = [].concat(partialIndexItems, fullIndexItems)
+
+    this.setState({
+      value,
+      matchedItems: matchedItems.slice(0, NUM_RESULTS)
+    })
+
+    console.timeEnd('_onInputChange')
+  }
+
+  _search (indexName, value) {
+    const { searchIndexes } = this.props
+
+    const searchIndex = searchIndexes[indexName]
     const searchName = normalizeForSearch(value)
 
     // create items for binary search
     const startItem = { searchName }
     const endItem = { searchName: searchName + '~' }
 
-    const { items } = this.props
-    const matchedItems = items.slice(
-      binarySearchBounds.ge(items, startItem, searchIndexSort),
-      binarySearchBounds.lt(items, endItem, searchIndexSort) + 1
+    const matchedItems = searchIndex.slice(
+      binarySearchBounds.ge(searchIndex, startItem, searchIndexSort),
+      binarySearchBounds.lt(searchIndex, endItem, searchIndexSort) + 1
     )
 
-    this.setState({ value, matchedItems })
-
-    console.timeEnd('_onInputChange')
+    return matchedItems
   }
 }

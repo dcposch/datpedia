@@ -9,29 +9,33 @@ const {openZip, getFileData} = require('./unzip.js')
 
 const ZIP_PATH = '/wiki.zip'
 // const ZIP_SIZE = 1757653124 // Simple English Wiki
-const ZIP_SIZE = 1184095 // Ray Charles
+const ZIP_SIZE = 4176011 // Ray Charles
 
 const zipFilePromise = openZip(ZIP_PATH, ZIP_SIZE)
 
 const store = window.store = {
   urlName: null, // null for the home page, or eg "Star_Wars" for that article
-  searchIndex: [], // list of available articles, search normalized and sorted
+  searchIndexes: {
+    partial: [], // list of *top* articles, search normalized and sorted
+    full: [] // list of *all* articles, search normalized and sorted
+  },
   articleCache: {} // article HTML cache, eg "Star_Wars": "<html>..."
 }
 
 init()
 
-function init () {
+async function init () {
   if (!window.DatArchive) {
     console.log('old web, not loading dat...')
   } else {
     initDat()
   }
 
-  initSearchIndex()
-
   window.addEventListener('hashchange', routeAndRender)
   routeAndRender()
+
+  await initSearchIndex('/list.txt', 'partial')
+  await initSearchIndex('/list-all.txt', 'full')
 }
 
 function initDat () {
@@ -57,7 +61,10 @@ function initDat () {
   })
 
   // Watch the search index for changes...
-  const searchActivity = archive.createFileActivityStream('/list.txt')
+  const searchActivity = archive.createFileActivityStream([
+    '/list.txt',
+    '/list-all.txt'
+  ])
 
   // And when there's a change, download the new version of the file...
   searchActivity.addEventListener('invalidated', ({path}) => {
@@ -68,12 +75,13 @@ function initDat () {
   // And when the download is done, use the new search index!
   searchActivity.addEventListener('changed', ({path}) => {
     console.log(path, 'has changed')
-    if (path === '/list.txt') initSearchIndex()
+    if (path === '/list.txt') initSearchIndex(path, 'partial')
+    if (path === '/list-all.txt') initSearchIndex(path, 'full')
   })
 }
 
-async function initSearchIndex () {
-  const res = await window.fetch('/list.txt')
+async function initSearchIndex (listPath, indexName) {
+  const res = await window.fetch(listPath)
   if (res.status !== 200) {
     console.error('Error fetching list.txt', res)
     return
@@ -85,9 +93,9 @@ async function initSearchIndex () {
     .split('\n')
     .slice(0, -1) // remove extra empty item caused by trailing \n
 
-  store.searchIndex = articles
+  const searchIndex = articles
     .map(urlName => {
-      const name = decodeURIComponent(urlName.replace(/_/g, ' '))
+      const name = urlName.replace(/_/g, ' ')
       const searchName = normalizeForSearch(name)
       return {
         urlName,
@@ -99,8 +107,13 @@ async function initSearchIndex () {
     // sort function
     .sort(searchIndexSort)
 
-  console.log('loaded search index, %d entries', store.searchIndex.length)
-  render()
+  store.searchIndexes[indexName] = searchIndex
+
+  console.log(
+    'loaded search index %s, %d entries',
+    indexName,
+    store.searchIndexes[indexName].length
+  )
 }
 
 /**

@@ -12,6 +12,7 @@ module.exports = class SearchPage extends React.Component {
 
   render () {
     const { store, dispatch } = this.props
+    const { searchIndexes } = store
 
     const styleGlobe = {
       position: 'absolute',
@@ -50,7 +51,7 @@ module.exports = class SearchPage extends React.Component {
           for the peer-to-peer web
         </h2>
 
-        <SearchBox items={store.searchIndex} dispatch={dispatch} autoFocus />
+        <SearchBox searchIndexes={searchIndexes} dispatch={dispatch} autoFocus />
       </div>
     )
   }
