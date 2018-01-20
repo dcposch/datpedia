@@ -5,7 +5,7 @@ const mkdirpSync = require('mkdirp').sync
 const dataUriSync = require('datauri').sync
 const normForSearch = require('normalize-for-search')
 
-const {rewriteImageUrls} = require('./relinker.js')
+const {rewriteImageUrls, rewriteLinks} = require('./relinker.js')
 const {searchIndexSort, urlNameToName} = require('../app/util.js')
 
 if (process.argv.length !== 3) {
@@ -60,11 +60,11 @@ function transferArticle (dumpName, name, dst) {
   console.log('transferring %s', name)
 
   const html = fs.readFileSync(filename, 'utf8')
-  const newHtml = transformHtml(html)
+  const newHtml = transformHtml(html, dumpName)
   fs.writeFileSync(dst + '/' + name + '.html', newHtml)
 }
 
-function transformHtml (html) {
+function transformHtml (html, dumpName) {
   const lines = html.split(/\n/g).map(s => s.trim())
 
   let foundStylesheet = false
@@ -85,15 +85,28 @@ function transformHtml (html) {
       }
     })
 
-  const newHtml = newLines.join('\n')
-  return rewriteImageUrls(newHtml, transformImageUrl)
+  let newHtml = newLines.join('\n')
+  newHtml = rewriteImageUrls(newHtml, url => transformImageUrl(url, dumpName))
+  newHtml = rewriteLinks(newHtml, url => transformLink(url))
+  return newHtml
 }
 
 // Transforms image urls to data:// URIs
-function transformImageUrl (url) {
+function transformImageUrl (url, dumpName) {
   if (!url.startsWith('../I/m')) return url
 
   const imagePath = decodeURIComponent(url.substring(3))
-  const dataURI = dataUriSync(imagePath)
+  const dataURI = dataUriSync('extract/' + dumpName + '/' + imagePath)
   return dataURI
+}
+
+function transformLink (url) {
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url
+  }
+  if (!url.endsWith('.html')) {
+    console.log('skipping non-standard link: ' + url)
+    return url
+  }
+  return '#' + url.substring(0, url.length - '.html'.length)
 }
