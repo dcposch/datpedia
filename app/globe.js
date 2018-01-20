@@ -1,4 +1,5 @@
 const React = require('react')
+const {mat4, vec4, vec3} = require('gl-matrix')
 
 module.exports = class Globe extends React.Component {
   constructor (props) {
@@ -9,8 +10,8 @@ module.exports = class Globe extends React.Component {
     this._onResizeBound = () => this.onResize()
     this._frameBound = () => this.frame()
 
-    const nlat = this._nlat = 17
-    const nlon = this._nlon = 36
+    const nlat = this._nlat = 5
+    const nlon = this._nlon = 8
 
     this._theta = 0
     this._points = new Float32Array(nlat * nlon * 3)
@@ -95,19 +96,38 @@ module.exports = class Globe extends React.Component {
       return
     }
 
+    // COMPUTE frame
+    const {width, height} = this.state
+    const w2 = width / 2
+    const h2 = height / 2
+    const m = 0.8 * Math.min(w2, h2)
+
+    // COMPUTE CAMERA
+    const mat = mat4.create()
+    const t = window.performance.now() / 1000
+    const center = vec3.create()
+    const eye = vec3.fromValues(
+      2 * Math.cos(t / 3),
+      2 * Math.sin(t / 3),
+      0.1 * Math.sin(t / Math.PI))
+    const up = vec3.create()
+    vec3.cross(up, eye, vec3.fromValues(0, 0, 1))
+    vec3.normalize(up, up)
+    mat4.lookAt(mat, eye, center, up)
+
+    // DRAW LINES
     const nla = this._nlat
     const nlo = this._nlon
-
     for (let i = 0; i < nla; i++) {
       for (let j = 0; j < nlo; j++) {
         const p00 = this.getPoint(i, j)
         const p01 = this.getPoint(i, (j + 1) % nlo)
         const lines = this._svgLines[i * nlo + j]
-        setLine(lines[0], p00, p01)
+        setLine(lines[0], p00, p01, mat, m, w2, h2)
 
         if (i < nla - 1) {
           const p10 = this.getPoint(i + 1, j)
-          setLine(lines[1], p00, p10)
+          setLine(lines[1], p00, p10, mat, m, w2, h2)
         }
       }
     }
@@ -121,11 +141,23 @@ module.exports = class Globe extends React.Component {
   }
 }
 
-function setLine (line, pA, pB) {
+function setLine (line, pA, pB, mat, m, w2, h2) {
   // TODO: projection matrix
 
-  line.setAttribute('x1', pA[0] * 200 + 400)
-  line.setAttribute('y1', pA[1] * 200 + 400)
-  line.setAttribute('x2', pB[0] * 200 + 400)
-  line.setAttribute('y2', pB[1] * 200 + 400)
+  const a = vec4.fromValues(pA[0], pA[1], pA[2], 1)
+  const b = vec4.fromValues(pB[0], pB[1], pB[2], 1)
+
+  vec4.transformMat4(a, a, mat)
+  vec4.transformMat4(b, b, mat)
+
+  if (a[3] !== 1 || b[3] !== 1) {
+    if (Math.random() < 0.001) {
+      console.log('div != 1')
+    }
+  }
+
+  line.setAttribute('x1', (a[0] / a[3]) * m + w2)
+  line.setAttribute('y1', (a[1] / a[3]) * m + w2)
+  line.setAttribute('x2', (b[0] / b[3]) * m + h2)
+  line.setAttribute('y2', (b[1] / b[3]) * m + h2)
 }
