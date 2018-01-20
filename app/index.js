@@ -5,6 +5,8 @@ const { Comlink } = require('comlinkjs')
 
 const App = require('./app.js')
 const {openZip, getFile} = require('./unzip.js')
+const {nameFromUrlName} = require('./util.js')
+const {findItem} = require('./search.js')
 
 const SEARCH_INDEX_PATHS = {
   partial: '/list-partial.json',
@@ -18,7 +20,9 @@ const store = window.store = {
   urlName: null, // null for the home page, or eg "Star_Wars" for that article
   searchIndexes: {
     partial: [], // list of *top* articles, search normalized and sorted
-    full: [] // list of *all* articles, search normalized and sorted
+    full: [], // list of *all* articles, search normalized and sorted
+    partialPromise: null,
+    fullPromise: null
   },
   articleCache: {} // article HTML cache, eg "Star_Wars": "<html>..."
 }
@@ -29,7 +33,7 @@ async function init () {
   if (!window.DatArchive) {
     console.log('old web, not loading dat...')
   } else {
-    initDat()
+    // initDat()
   }
 
   window.addEventListener('hashchange', routeAndRender)
@@ -39,6 +43,7 @@ async function init () {
   await initSearchIndex('full')
 }
 
+/*
 function initDat () {
   // Get the url of the current archive
   const datUrl = window.location.origin
@@ -60,25 +65,8 @@ function initDat () {
   networkActivity.addEventListener('sync', ({feed}) => {
     console.log('downloaded everything currently published in the', feed)
   })
-
-  // Watch the search index for changes...
-  const searchActivity = archive.createFileActivityStream(
-    Object.values(SEARCH_INDEX_PATHS)
-  )
-
-  // And when there's a change, download the new version of the file...
-  searchActivity.addEventListener('invalidated', ({path}) => {
-    console.log(path, 'has been invalidated, downloading the update')
-    archive.download(path)
-  })
-
-  // And when the download is done, use the new search index!
-  searchActivity.addEventListener('changed', ({path}) => {
-    console.log(path, 'has changed')
-    if (path === SEARCH_INDEX_PATHS.partial) initSearchIndex('partial')
-    if (path === SEARCH_INDEX_PATHS.full) initSearchIndex('full')
-  })
 }
+*/
 
 /**
  * TODO: maybe use ServiceWorker once Beaker allows it
@@ -92,10 +80,29 @@ function initDat () {
  *   )
  * }
  */
-async function initSearchIndex (indexName) {
+
+/**
+ * Either starts fetching a given search index,
+ * or returns the promise for a fetch already done or already in progress.
+ * (Returns a promise no matter what.)
+ */
+function initSearchIndex (indexName) {
+  let promise = store.searchIndexes[indexName + 'Promise']
+
+  if (promise == null) {
+    // Start the fetch
+    promise = fetchSearchIndex(indexName)
+    store.searchIndexes[indexName + 'Promise'] = promise
+  }
+
+  return promise
+}
+
+async function fetchSearchIndex (indexName) {
   const indexPath = SEARCH_INDEX_PATHS[indexName]
   const url = window.location.origin + indexPath
   const searchIndex = await worker.fetchSearchIndex(url)
+
   store.searchIndexes[indexName] = searchIndex
   console.log(
     'loaded search index %s, %d entries',
@@ -140,10 +147,36 @@ async function loadArticle (urlName) {
   }
 
   console.log(`loading article ${urlName}`)
+
   const zipFile = await zipFilePromise
-  const html = await getFile(zipFile, 'A/' + urlName + '.html')
+
+  const entryData = await getEntryData(urlName)
+  if (entryData == null) {
+    throw new Error('entry not found: ' + urlName)
+  }
+
+  const html = await getFile(zipFile, entryData)
+
   console.log(`loaded article ${urlName}, got ${html && html.length} b`)
   store.articleCache[urlName] = html
 
   render()
+}
+
+async function getEntryData (urlName) {
+  // TODO: IndexedDB
+
+  // First, find the search name
+  const name = nameFromUrlName(urlName)
+
+  // First, check the partial index
+  const partial = await initSearchIndex('partial')
+  let entryData = findItem(partial, name)
+  if (entryData == null) {
+    // Then, check the full index
+    const full = await initSearchIndex('full')
+    entryData = findItem(full, name)
+  }
+
+  return entryData
 }

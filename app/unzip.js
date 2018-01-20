@@ -36,7 +36,8 @@ async function openZip (zipPath) {
     zipSize,
     { lazyEntries: true }
   )
-  zipFile._entriesPromise = readEntries(zipFile)
+  zipFile.openReadStreamAsync = pify(zipFile.openReadStream.bind(zipFile))
+
   return zipFile
 }
 
@@ -49,31 +50,17 @@ async function fetchZipSize (zipPath) {
 /**
  * Given a zip file and a filename, extracts file data
  */
-async function getFile (zipFile, fileName) {
-  const entry = await findEntry(zipFile, fileName)
+async function getFile (zipFile, entryData) {
+  const entryValues = {}
+  Object.keys(entryData).forEach(k => {
+    entryValues[k] = {value: entryData[k]}
+  })
+  const entry = Object.create(yauzl.Entry.prototype, entryValues)
 
-  if (entry == null) {
-    throw new Error('file not found: ' + fileName)
-  }
-
-  const openReadStream = pify(zipFile.openReadStream.bind(zipFile))
-  const readStream = await openReadStream(entry)
+  const readStream = await zipFile.openReadStreamAsync(entry)
 
   const fileData = await concatAsync(readStream)
   return fileData
-}
-
-async function findEntry (zipFile, fileName) {
-  const entries = await zipFile._entriesPromise
-  console.log(entries[0].fileName)
-  const entry = entries.find(entry => entry.fileName === fileName)
-  // const entry2 = Object.create(yauzl.Entry.prototype, {
-  //   compressedSize: { value: entry.compressedSize },
-  //   relativeOffsetOfLocalHeader: { value: entry.relativeOffsetOfLocalHeader },
-  //   compressionMethod: { value: entry.compressionMethod },
-  //   generalPurposeBitFlag: { value: entry.generalPurposeBitFlag }
-  // })
-  return entry
 }
 
 // In zip file entries, directory file names end with '/'

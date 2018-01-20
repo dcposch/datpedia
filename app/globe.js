@@ -1,7 +1,6 @@
 const React = require('react')
 
 module.exports = class Globe extends React.Component {
-
   constructor (props) {
     super(props)
 
@@ -62,7 +61,8 @@ module.exports = class Globe extends React.Component {
 
   initSvg (svg) {
     this._svg = svg
-    for (let i = 0 )
+
+    // TODO: add lines
     svg.createElement('line')
   }
 

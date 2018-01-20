@@ -6,10 +6,6 @@ const SearchBox = require('./SearchBox.js')
  * Search page; doubles as the Datpedia homepage.
  */
 module.exports = class SearchPage extends React.Component {
-  constructor (props) {
-    super(props)
-  }
-
   render () {
     const { store, dispatch } = this.props
     const { searchIndexes } = store

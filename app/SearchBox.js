@@ -1,9 +1,7 @@
-const binarySearchBounds = require('binary-search-bounds')
-const normalizeForSearch = require('normalize-for-search')
 const React = require('react')
 const ReactAutocomplete = require('react-autocomplete')
 
-const { searchIndexSort } = require('./util')
+const { findRange } = require('./search.js')
 
 const NUM_RESULTS = 5
 
@@ -92,7 +90,6 @@ module.exports = class SearchBox extends React.Component {
     const partialIndexItems = this._search('partial', value)
       .slice(0, NUM_RESULTS)
 
-    // Skip full search if we already have enough results from the partial index
     const fullIndexItems = this._search('full', value)
       .slice(0, NUM_RESULTS)
       .filter(fullItem => {
@@ -115,19 +112,7 @@ module.exports = class SearchBox extends React.Component {
 
   _search (indexName, value) {
     const { searchIndexes } = this.props
-
     const searchIndex = searchIndexes[indexName]
-    const searchName = normalizeForSearch(value)
-
-    // create items for binary search
-    const startItem = { searchName }
-    const endItem = { searchName: searchName + '~' }
-
-    const matchedItems = searchIndex.slice(
-      binarySearchBounds.ge(searchIndex, startItem, searchIndexSort),
-      binarySearchBounds.lt(searchIndex, endItem, searchIndexSort) + 1
-    )
-
-    return matchedItems
+    return findRange(searchIndex, value)
   }
 }
