@@ -3,6 +3,7 @@
 const {searchIndexSort, urlNameToName} = require('../app/util.js')
 const {readEntries} = require('../app/unzip.js')
 
+const fs = require('fs')
 const pify = require('pify')
 const yauzl = require('yauzl')
 const normForSearch = require('normalize-for-search')
@@ -11,6 +12,8 @@ if (process.argv.length !== 3) {
   console.log('Usage: ./scripts/list.js <name>')
   process.exit()
 }
+
+const yauzlOpen = pify(yauzl.open.bind(yauzl))
 
 main(process.argv[2])
 
@@ -23,21 +26,19 @@ async function main (name) {
   articles.sort(searchIndexSort)
 
   console.log('creating list-full.json')
-  fs.writeFileSync(dst + '/list-full.json', JSON.stringify(articles))
+  fs.writeFileSync(dir + '/list-full.json', JSON.stringify(articles))
 
   console.log('creating list-partial.json')
   const topArticleNames = fs.readFileSync('most-viewed/list.txt', 'utf8')
     .split(/\n/g).filter(s => s.length > 0)
   const topArticles = articles.filter(
     a => topArticleNames.includes(a.urlName))
-  fs.writeFileSync(dst + '/list-partial.json', JSON.stringify(topArticles))
+  fs.writeFileSync(dir + '/list-partial.json', JSON.stringify(topArticles))
 }
-
-const yauzlOpen = pify(yauzl.open)
 
 async function loadZipEntries (path) {
   const zipfile = await yauzlOpen(path, {lazyEntries: true})
-  const entries = await readEntries(zipFile)
+  const entries = await readEntries(zipfile)
   return entries
 }
 
@@ -59,7 +60,7 @@ function entryToArticle (entry) {
   const name = urlNameToName(urlName)
   const searchName = normForSearch(name)
 
-  entries.push({
+  return {
     urlName,
     name,
     searchName,
@@ -67,5 +68,5 @@ function entryToArticle (entry) {
     relativeOffsetOfLocalHeader,
     compressionMethod,
     generalPurposeBitFlag
-  })
+  }
 }

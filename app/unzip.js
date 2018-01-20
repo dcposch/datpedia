@@ -9,7 +9,7 @@ global.setImmediate = process.nextTick.bind(process)
 const concatAsync = pify(concat)
 const zipFromRandomAccessReaderAsync = pify(yauzl.fromRandomAccessReader)
 
-module.exports = { openZip, getFileData }
+module.exports = { openZip, getFileData, readEntries }
 
 /**
  * Given a filename and a loaded (or loading) ZipRandomAccessReader,

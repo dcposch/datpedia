@@ -6,7 +6,5 @@ transform/
 build/
 
 static/bundle.js
-static/sw-bundle.js
-static/wiki.zip
 
 .cache/
