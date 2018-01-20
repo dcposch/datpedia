@@ -1,4 +1,4 @@
-/* global Headers */
+/* global fetch, Headers */
 
 const pify = require('pify')
 const yauzl = require('yauzl')
@@ -16,7 +16,10 @@ module.exports = { openZip, getFileData, readEntries }
 /**
  * Opens a zip file
  */
-async function openZip (zipPath, zipSize) {
+async function openZip (zipPath) {
+  const zipSize = await fetchZipSize(zipPath)
+  console.log('fetched zip size', zipSize)
+
   const reader = new ZipRandomAccessReader(zipPath)
   const zipFile = await zipFromRandomAccessReaderAsync(
     reader,
@@ -25,6 +28,12 @@ async function openZip (zipPath, zipSize) {
   )
   zipFile._entriesPromise = readEntries(zipFile)
   return zipFile
+}
+
+async function fetchZipSize (zipPath) {
+  const response = await fetch(zipPath, { method: 'HEAD' })
+  const size = Number(response.headers.get('content-length'))
+  return size
 }
 
 /**

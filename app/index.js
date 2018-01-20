@@ -6,17 +6,13 @@ const { Comlink } = require('comlinkjs')
 const App = require('./app.js')
 const {openZip, getFileData} = require('./unzip.js')
 
-const ZIP_PATH = '/wiki.zip'
-const ZIP_SIZE = 370423696 // Simple English Wiki
-// const ZIP_SIZE = 4176011 // Ray Charles
-
 const SEARCH_INDEX_PATHS = {
   partial: '/list.txt',
   full: '/list-all.txt'
 }
 
 const worker = Comlink.proxy(webworkify(require('./worker.js')))
-const zipFilePromise = openZip(ZIP_PATH, ZIP_SIZE)
+const zipFilePromise = openZip('/wiki.zip')
 
 const store = window.store = {
   urlName: null, // null for the home page, or eg "Star_Wars" for that article
