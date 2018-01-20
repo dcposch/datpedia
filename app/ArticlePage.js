@@ -17,7 +17,7 @@ module.exports = class ArticlePage extends React.Component {
       <div className='ArticlePage'>
         <header>
           <a href='#'>datpedia</a>
-          <SearchBox searchIndexes={searchIndexes} dispatch={dispatch} />
+          <SearchBox searchIndexes={searchIndexes} dispatch={dispatch} whiteBg />
         </header>
         { html != null && (<div
           className='ArticleBody'

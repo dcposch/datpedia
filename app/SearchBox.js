@@ -25,6 +25,7 @@ module.exports = class SearchBox extends React.Component {
   render () {
     const {
       autoFocus = false,
+      whiteBg = false,
       dispatch
     } = this.props
 
@@ -33,6 +34,16 @@ module.exports = class SearchBox extends React.Component {
       value
     } = this.state
 
+    const menuStyle = {
+      padding: '0',
+      position: 'absolute',
+      overflow: 'auto'
+    }
+
+    if (whiteBg) {
+      menuStyle.backgroundColor = '#fff'
+    }
+
     return (
       <ReactAutocomplete
         inputProps={{
@@ -40,11 +51,7 @@ module.exports = class SearchBox extends React.Component {
           className: 'search',
           autoFocus
         }}
-        menuStyle={{
-          padding: '0',
-          position: 'fixed',
-          overflow: 'auto'
-        }}
+        menuStyle={menuStyle}
         wrapperProps={{className: 'SearchBox'}}
         items={matchedItems}
         getItemValue={item => item.name}
