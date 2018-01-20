@@ -1,3 +1,4 @@
+
 /* GLOBAL */
 
 * {
@@ -7,8 +8,8 @@
 /* ARTICLE PAGE */
 
 .ArticlePage {
-   min-width: 768px;
-   max-width: 768px;
+   min-width: 600px;
+   max-width: 600px;
    margin: 32px auto;
    font: 14px/24px sans-serif;
 }
@@ -16,6 +17,8 @@
 .ArticlePage header {
   font-size: 24px;
   font-weight: bold;
+  padding-bottom: 8px;
+  border-bottom: 2px solid black;
 }
 
 .ArticlePage header a {
@@ -25,7 +28,7 @@
 
 .ArticlePage .SearchBox {
   display: inline-block;
-  width: 512px;
+  width: 408px;
 }
 
 .ArticlePage header a:link,
@@ -43,6 +46,17 @@
 
 .ArticlePage .mw-body {
   padding: 0 !important;
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.ArticlePage .infobox {
+  float: right;
+  margin-left: 32px;
+}
+
+.ArticlePage #titleHeading {
+  margin: 64px 0 32px 0 !important;
 }
 
 
