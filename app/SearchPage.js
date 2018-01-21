@@ -1,7 +1,7 @@
 const React = require('react')
 
 const SearchBox = require('./SearchBox.js')
-const Globe = require('./Globe.js')
+// const Globe = require('./Globe.js')
 
 /**
  * Search page; doubles as the Datpedia homepage.
@@ -9,7 +9,6 @@ const Globe = require('./Globe.js')
 module.exports = class SearchPage extends React.Component {
   render () {
     const { store, dispatch } = this.props
-    const { searchIndexes } = store
 
     const styleGlobe = {
       position: 'absolute',
@@ -48,7 +47,7 @@ module.exports = class SearchPage extends React.Component {
           for the peer-to-peer web
         </h2>
 
-        <SearchBox searchIndexes={searchIndexes} dispatch={dispatch} autoFocus />
+        <SearchBox store={store} dispatch={dispatch} autoFocus />
       </div>
     )
   }

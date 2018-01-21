@@ -7,23 +7,23 @@ const SearchBox = require('./SearchBox.js')
 module.exports = class ArticlePage extends React.Component {
   render () {
     const {store, dispatch} = this.props
-    const {articleCache, searchIndexes, urlName} = store
+    const {articleCache, urlName} = store
 
+    const isSearching = store.search != null
     const name = urlName.replace(/_/g, ' ')
 
-    const html = articleCache[urlName]
+    const html = articleCache[urlName] ||
+      ('<h1>' + name + '</h1><p>Loading...</p>')
 
     return (
       <div className='ArticlePage'>
         <header>
           <a href='#'>datpedia</a>
-          <SearchBox searchIndexes={searchIndexes} dispatch={dispatch} whiteBg />
+          <SearchBox store={store} dispatch={dispatch} whiteBg />
         </header>
-        { html != null && (<div
-          className='ArticleBody'
-          dangerouslySetInnerHTML={{__html: html}} />)
-        }
-        { html == null && <div><h1>{name}</h1><p>Loading...</p></div> }
+        <div
+          className={'ArticleBody' + (isSearching ? ' deemphasized' : '')}
+          dangerouslySetInnerHTML={{__html: html}} />
       </div>
     )
   }

@@ -25,7 +25,8 @@ const store = window.store = {
     partialPromise: null,
     fullPromise: null
   },
-  articleCache: {} // article HTML cache, eg "Star_Wars": "<html>..."
+  articleCache: {}, // article HTML cache, eg "Star_Wars": "<html>..."
+  search: null // current search, eg "sta", or null
 }
 
 init()
@@ -118,7 +119,6 @@ function render () {
   const root = document.querySelector('#root')
   const app = <App store={store} dispatch={dispatch} />
   ReactDOM.render(app, root)
-  maybeScrollToCiteNote()
 }
 
 function maybeScrollToCiteNote () {
@@ -147,7 +147,12 @@ function dispatch (action, data) {
   console.log('dispatch', action, data)
   switch (action) {
     case 'NAVIGATE':
+      store.search = null
       window.location = data
+      return
+    case 'SET_SEARCH':
+      store.search = data
+      render()
       return
     default:
       throw new Error('unknown action ' + action)
@@ -168,6 +173,7 @@ function routeAndRender () {
 
   // Render immediately
   render()
+  maybeScrollToCiteNote()
 }
 
 async function loadArticle (urlName) {

@@ -12,8 +12,8 @@ dd {
 /* ARTICLE PAGE */
 
 .ArticlePage {
-   min-width: 600px;
-   max-width: 600px;
+   min-width: 710px;
+   max-width: 710px;
    margin: 32px auto;
    font: 14px/24px sans-serif;
 }
@@ -26,7 +26,7 @@ dd {
 
 .ArticlePage .SearchBox {
   display: inline-block;
-  width: 408px;
+  width: 518px;
 }
 
 .ArticlePage header a {
@@ -48,34 +48,45 @@ dd {
 
 /* ARTICLE BODY */
 
+.ArticleBody.deemphasized {
+  opacity: 0.2;
+}
+
 .ArticleBody {
   padding-top: 64px;
   border-top: 2px solid black;
+  transition: opacity 0.25s;
 }
 
-.ArticlePage .mw-body {
+.ArticlePage .SearchBox input {
+  padding: 8px 32px;
+}
+
+/* ARTICLE MEDIAWIKI CONTENT */
+
+.ArticleBody .mw-body {
   padding: 0 !important;
   font-size: 16px;
   line-height: 28px;
 }
 
-.ArticlePage .infobox {
+.ArticleBody .infobox {
   float: right;
   margin-left: 32px;
 }
 
-.ArticlePage #titleHeading {
+.ArticleBody #titleHeading {
   margin: 0 0 32px 0 !important;
 }
 
-.ArticlePage .thumb {
+.ArticleBody .thumb {
   display: inline-block;
   margin: 0 24px 24px 0;
   vertical-align: top;
 }
 
-.ArticlePage .SearchBox input {
-  padding: 8px 32px;
+.ArticleBody .tracklist {
+    margin: 0 !important;
 }
 
 
