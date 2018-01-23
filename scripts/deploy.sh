@@ -1,3 +1,12 @@
+
+HOST="$1"
+
+if [ -z "$HOST" ]; then
+  HOST="datpedia.us-east-1.aws"
+fi
+
+echo "Deploying to $HOST"
+
 cd .. && tar -czvf - \
   --exclude='datpedia/node_modules' \
   --exclude='datpedia/download' \
@@ -9,6 +18,6 @@ cd .. && tar -czvf - \
   --exclude='datpedia/static/wiki.zip' \
   --exclude='datpedia/static/list-full.json' \
   --exclude='datpedia/static/list-partial.json' \
-  datpedia | ssh datpedia.us-east-1.aws "cd /mnt/disk && tar -xzvf -"
+  datpedia | ssh $HOST "cd /mnt/disk && tar -xzvf -"
 cd datpedia
 echo "done"
