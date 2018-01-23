@@ -6,23 +6,27 @@ const dataUriSync = require('datauri').sync
 
 const {rewriteImageUrls, rewriteLinks} = require('./relinker.js')
 
-if (process.argv.length !== 3) {
-  console.log('Usage: ./scripts/transform.js <name>')
+if (![3, 4].includes(process.argv.length)) {
+  console.log('Usage: ./scripts/transform.js <name> <opt prefix>')
   process.exit()
 }
 
-main(process.argv[2])
+main(process.argv[2], process.argv[3])
 
-function main (name) {
+function main (name, optPrefix) {
   const dst = 'transform/' + name
   const dstA = dst + '/A'
   mkdirpSync(dstA)
 
   console.log('listing articles')
 
-  const articles = fs.readdirSync('extract/' + name + '/A/')
+  let articles = fs.readdirSync('extract/' + name + '/A/')
     .filter(s => s.endsWith('.html'))
     .map(s => s.substring(0, s.length - '.html'.length))
+
+  if (optPrefix != null) {
+    articles = articles.filter(a => a.startsWith(optPrefix))
+  }
 
   articles.forEach(article => transferArticle(name, article, dstA))
 }
@@ -91,9 +95,21 @@ function transformLink (url, pageUrlName) {
   if (url === '' || url.startsWith('http://') || url.startsWith('https://')) {
     return url
   }
+  if (url.startsWith('geo:')) {
+    return 'https://www.google.com/maps?t=k&q=loc:' + url.substr('geo:'.length)
+  }
   if (url.startsWith('#')) {
     // Cite notes, etc. Rewrite "#cite_note-1" to '#Hypertext#cite_note-1'
     return '#' + pageUrlName + url
+  }
+  if (url.includes('.html#')) {
+    // Turn eg "Foo.html#bar" into "#Foo#bar"
+    const ix = url.indexOf('.html#')
+    return '#' + url.substring(0, ix) + url.substring(ix + '.html'.length)
+  }
+  if (url.includes('#')) {
+    // Turn "Foo#bar" into "#Foo#bar"
+    return '#' + url
   }
   if (!url.endsWith('.html')) {
     console.log('skipping non-standard link: ' + url)
