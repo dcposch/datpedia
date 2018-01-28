@@ -1,7 +1,5 @@
 # datpedia
 
-wikipedia over dat://
-
 <img width="1214" alt="screen shot 2018-01-27 at 10 10 53 pm" src="https://user-images.githubusercontent.com/169280/35479552-295eda56-03af-11e8-8bb4-4fcebce794cc.png">
 
 <img width="1214" alt="screen shot 2018-01-27 at 10 11 34 pm" src="https://user-images.githubusercontent.com/169280/35479553-29779dd4-03af-11e8-9973-a64f02b7cfab.png">
