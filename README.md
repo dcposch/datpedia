@@ -10,7 +10,7 @@
 ## quick start
 
 1. get [Beaker Browser](https://beakerbrowser.com)
-2. using Beaker, go to `dat://datpedia.hashbase.io`
+2. using Beaker, go to `datpedia.org`
 
 
 ## code
@@ -25,3 +25,4 @@ that should print instructions to get started.
 
 - **scripts** contains scripts to download and process Wikipedia dumps
 - **www** contains the old-web website served at https://datpedia.org
+- **app** contains the React app that renders peer-to-peer Wikipedia
