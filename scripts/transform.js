@@ -92,7 +92,7 @@ function transformImageUrl (url, dumpName) {
 
 function transformLink (url, pageUrlName) {
   // Leave external links alone
-  if (url === '' || url.startsWith('http://') || url.startsWith('https://')) {
+  if (url === '' || url.startsWith('http://') || url.startsWith('https://') || url.startsWith('ftp://')) {
     return url
   }
   if (url.startsWith('geo:')) {
