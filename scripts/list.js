@@ -21,25 +21,64 @@ async function main (name) {
   const dir = 'transform/' + name
 
   console.log('loading wiki.zip')
-  const zipEntries = await loadZipEntries(dir + '/wiki.zip')
-  const articles = zipEntries.map(entryToArticle)
+  const articles = await loadArticles(dir + '/wiki.zip')
   articles.sort(searchIndexSort)
 
-  console.log('creating list-full.json')
-  fs.writeFileSync(dir + '/list-full.json', JSON.stringify(articles))
+  //console.log('creating list-full.json')
+  //writeJsonArray(dir + '/list-full.json', articles)
+
+  console.log('creating list.tsv')
+  writeTsv(dir + '/list.tsv', articles)
 
   console.log('creating list-partial.json')
   const topArticleNames = fs.readFileSync('most-viewed/list.txt', 'utf8')
     .split(/\n/g).filter(s => s.length > 0)
   const topArticles = articles.filter(
     a => topArticleNames.includes(a.urlName))
-  fs.writeFileSync(dir + '/list-partial.json', JSON.stringify(topArticles))
+  writeJsonArray(dir + '/list-partial.json', topArticles)
 }
 
-async function loadZipEntries (path) {
+
+function writeTsv (path, items) {
+  const stream = fs.createWriteStream(path)
+  const cols = [
+    "name",
+    "searchName",
+    "compressedSize",
+    "relativeOffsetOfLocalHeader",
+    "compressionMethod",
+    "generalPurposeBitFlag"
+  ]
+  stream.write(cols.join('\t') + '\n', 'utf8')
+  for (let i = 0; i < items.length; i++) {
+    const vals = cols.map(c => items[i][c])
+    stream.write(vals.join('\t') + '\n', 'utf8')
+    if ((i + 1) % 100000 === 0) {
+      console.log(`wrote ${i + 1} lines`)
+    }
+  }
+  stream.end()
+}
+
+function writeJsonArray (path, items) {
+  const stream = fs.createWriteStream(path)
+  stream.write('[\n', 'utf8')
+  for (let i = 0; i < items.length; i++) {
+    const line = JSON.stringify(items[i]) + ((i < items.length - 1) ? ',' : '')
+    stream.write(line + '\n', 'utf8')
+    if ((i + 1) % 100000 === 0) {
+      console.log(`wrote ${i + 1} lines`)
+    }
+  }
+  stream.write(']\n', 'utf8')
+  stream.end()
+}
+
+async function loadArticles (path) {
   const zipfile = await yauzlOpen(path, {lazyEntries: true})
-  const entries = await readEntries(zipfile)
-  return entries
+  console.log('opened ' + path)
+  const articles = await readEntries(zipfile, entryToArticle)
+  return articles
 }
 
 function entryToArticle (entry) {

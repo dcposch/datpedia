@@ -28,6 +28,10 @@ function main (name, optPrefix) {
     articles = articles.filter(a => a.startsWith(optPrefix))
   }
 
+  const ix = articles.indexOf('Sparklehorse')
+  console.log('found Sparklehorse at ' + ix)
+  articles = articles.slice(ix)
+
   articles.forEach(article => transferArticle(name, article, dstA))
 }
 
@@ -92,7 +96,7 @@ function transformImageUrl (url, dumpName) {
 
 function transformLink (url, pageUrlName) {
   // Leave external links alone
-  if (url === '' || url.startsWith('http://') || url.startsWith('https://') || url.startsWith('ftp://')) {
+  if (url === '' || url.startsWith('http://') || url.startsWith('https://')) {
     return url
   }
   if (url.startsWith('geo:')) {
