@@ -22,7 +22,7 @@ async function openZip (zipPath) {
 
   let zipSize = await fetchZipSize(zipPath)
   if (zipSize === 0) {
-    zipSize = 3470744536
+    zipSize = 169316988448
     console.log('fallback hardcoded zip size: ' + zipSize)
   } else {
     console.log('fetched zip size: ' + zipSize)
