@@ -13,7 +13,7 @@ if (![3, 4].includes(process.argv.length)) {
 
 main(process.argv[2], process.argv[3])
 
-function main(name, optPrefix) {
+function main (name, optPrefix) {
   const dst = 'transform/' + name
   const dstA = dst + '/A'
   mkdirpSync(dstA)
@@ -36,7 +36,7 @@ function main(name, optPrefix) {
   articles.forEach(article => transferArticle(name, article, dstA))
 }
 
-function transferArticle(dumpName, name, dst) {
+function transferArticle (dumpName, name, dst) {
   const filename = 'extract/' + dumpName + '/A/' + name + '.html'
 
   if (!fs.existsSync(filename)) {
@@ -51,7 +51,7 @@ function transferArticle(dumpName, name, dst) {
   fs.writeFileSync(dst + '/' + name + '.html', newHtml)
 }
 
-function transformHtml(html, dumpName, pageUrlName) {
+function transformHtml (html, dumpName, pageUrlName) {
   const lines = html.split(/\n/g).map(s => s.trim())
 
   let foundStylesheet = false
@@ -77,7 +77,7 @@ function transformHtml(html, dumpName, pageUrlName) {
 }
 
 // Transforms image urls to data:// URIs
-function transformImageUrl(url, dumpName) {
+function transformImageUrl (url, dumpName) {
   if (!url.startsWith('../I/m')) return url
 
   const imageFileName = decodeURIComponent(url.substring(3))
@@ -94,9 +94,14 @@ function transformImageUrl(url, dumpName) {
   return dataURI
 }
 
-function transformLink(url, pageUrlName) {
+function transformLink (url, pageUrlName) {
   // Leave external links alone
-  if (url === '' || url.startsWith('http://') || url.startsWith('https://')) {
+  if (
+    url === '' ||
+    url.startsWith('http://') ||
+    url.startsWith('https://') ||
+    url.startsWith('ftp://')
+  ) {
     return url
   }
   if (url.startsWith('geo:')) {

@@ -11,7 +11,7 @@ if [ -z "$1" ]; then
 fi
 
 echo "WIKIMEDIA TO DAT"
-mkdir -p download extract organize
+mkdir -p download extract
 
 echo "DOWNLOADING..."
 ./scripts/download.sh $1

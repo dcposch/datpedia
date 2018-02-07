@@ -53,7 +53,7 @@
   "scripts": {
     "start": "./scripts/main.sh",
     "build": "browserify app/index.js -o static/bundle.js",
-    "test": "eslint script app && flow",
+    "test": "eslint scripts app && flow",
     "watch": "watchify app/index.js -dv -o static/bundle.js",
     "flow-typed": "flow-typed install"
   }

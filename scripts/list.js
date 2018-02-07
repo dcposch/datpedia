@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const {searchIndexSort, urlNameToName} = require('../app/util.js')
-const {readEntries} = require('../app/unzip.js')
+const { searchIndexSort, urlNameToName } = require('../app/util.js')
+const { readEntries } = require('../app/unzip.js')
 
 const fs = require('fs')
 const pify = require('pify')
@@ -24,30 +24,27 @@ async function main (name) {
   const articles = await loadArticles(dir + '/wiki.zip')
   articles.sort(searchIndexSort)
 
-  //console.log('creating list-full.json')
-  //writeJsonArray(dir + '/list-full.json', articles)
-
   console.log('creating list.tsv')
   writeTsv(dir + '/list.tsv', articles)
 
   console.log('creating list-partial.json')
-  const topArticleNames = fs.readFileSync('most-viewed/list.txt', 'utf8')
-    .split(/\n/g).filter(s => s.length > 0)
-  const topArticles = articles.filter(
-    a => topArticleNames.includes(a.urlName))
+  const topArticleNames = fs
+    .readFileSync('most-viewed/list.txt', 'utf8')
+    .split(/\n/g)
+    .filter(s => s.length > 0)
+  const topArticles = articles.filter(a => topArticleNames.includes(a.urlName))
   writeJsonArray(dir + '/list-partial.json', topArticles)
 }
-
 
 function writeTsv (path, items) {
   const stream = fs.createWriteStream(path)
   const cols = [
-    "name",
-    "searchName",
-    "compressedSize",
-    "relativeOffsetOfLocalHeader",
-    "compressionMethod",
-    "generalPurposeBitFlag"
+    'name',
+    'searchName',
+    'compressedSize',
+    'relativeOffsetOfLocalHeader',
+    'compressionMethod',
+    'generalPurposeBitFlag'
   ]
   stream.write(cols.join('\t') + '\n', 'utf8')
   for (let i = 0; i < items.length; i++) {
@@ -64,7 +61,7 @@ function writeJsonArray (path, items) {
   const stream = fs.createWriteStream(path)
   stream.write('[\n', 'utf8')
   for (let i = 0; i < items.length; i++) {
-    const line = JSON.stringify(items[i]) + ((i < items.length - 1) ? ',' : '')
+    const line = JSON.stringify(items[i]) + (i < items.length - 1 ? ',' : '')
     stream.write(line + '\n', 'utf8')
     if ((i + 1) % 100000 === 0) {
       console.log(`wrote ${i + 1} lines`)
@@ -75,7 +72,7 @@ function writeJsonArray (path, items) {
 }
 
 async function loadArticles (path) {
-  const zipfile = await yauzlOpen(path, {lazyEntries: true})
+  const zipfile = await yauzlOpen(path, { lazyEntries: true })
   console.log('opened ' + path)
   const articles = await readEntries(zipfile, entryToArticle)
   return articles
@@ -83,19 +80,21 @@ async function loadArticles (path) {
 
 function entryToArticle (entry) {
   const {
-      fileName,
-      compressedSize,
-      relativeOffsetOfLocalHeader,
-      compressionMethod,
-      generalPurposeBitFlag
-    } = entry
+    fileName,
+    compressedSize,
+    relativeOffsetOfLocalHeader,
+    compressionMethod,
+    generalPurposeBitFlag
+  } = entry
 
   if (!fileName.startsWith('A/') || !fileName.endsWith('.html')) {
     throw new Error('unexpected filename ' + fileName)
   }
 
-  const urlName = fileName
-    .substring('A/'.length, fileName.length - '.html'.length)
+  const urlName = fileName.substring(
+    'A/'.length,
+    fileName.length - '.html'.length
+  )
   const name = urlNameToName(urlName)
   const searchName = normForSearch(name)
 
