@@ -1,13 +1,13 @@
-const normalizeForSearch = require('normalize-for-search')
-const binarySearchBounds = require('binary-search-bounds')
+import normalizeForSearch from 'normalize-for-search'
+import binarySearchBounds from 'binary-search-bounds'
 
-const {searchIndexSort} = require('./util.js')
+import { searchIndexSort } from './util.js'
 
-module.exports = {findItem, findRange}
+module.exports = { findItem, findRange }
 
 function findItem (searchIndex, name) {
   const searchName = normalizeForSearch(name)
-  const ix = binarySearchBounds.eq(searchIndex, {searchName}, searchIndexSort)
+  const ix = binarySearchBounds.eq(searchIndex, { searchName }, searchIndexSort)
   return ix < 0 ? null : searchIndex[ix]
 }
 

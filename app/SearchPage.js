@@ -1,12 +1,16 @@
-const React = require('react')
+import React from 'react'
 
-const SearchBox = require('./SearchBox.js')
-// const Globe = require('./Globe.js')
+import SearchBox from './SearchBox.js'
+// import Globe from './Globe.js'
+
+import type { StoreDispatch } from './types.js'
 
 /**
  * Search page; doubles as the Datpedia homepage.
  */
 module.exports = class SearchPage extends React.Component {
+  props: StoreDispatch
+
   render () {
     const { store, dispatch } = this.props
 
@@ -34,7 +38,7 @@ module.exports = class SearchPage extends React.Component {
 
     return (
       <div className='SearchPage'>
-        <div style={styleBlur} >
+        <div style={styleBlur}>
           <div style={styleGlobe} />
         </div>
 

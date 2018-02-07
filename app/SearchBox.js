@@ -1,7 +1,8 @@
-const React = require('react')
-const ReactAutocomplete = require('react-autocomplete')
+import React from 'react'
+import ReactAutocomplete from 'react-autocomplete'
+import { findRange } from './search.js'
 
-const { findRange } = require('./search.js')
+import type { StoreDispatch } from './types.js'
 
 const NUM_RESULTS = 5
 
@@ -11,6 +12,8 @@ const NUM_RESULTS = 5
  * Dispatches a 'NAVIGATE' action when the user chooses an item.
  */
 module.exports = class SearchBox extends React.Component {
+  props: StoreDispatch & { autoFocus: boolean, whiteBg: boolean }
+
   constructor (props) {
     super(props)
     this.state = {
@@ -21,18 +24,11 @@ module.exports = class SearchBox extends React.Component {
   }
 
   render () {
-    const {
-      autoFocus = false,
-      whiteBg = false,
-      store,
-      dispatch
-    } = this.props
+    const { autoFocus = false, whiteBg = false, store, dispatch } = this.props
 
-    const {search} = store
+    const { search } = store
 
-    const {
-      matchedItems
-    } = this.state
+    const { matchedItems } = this.state
 
     const menuStyle = {
       padding: '0',
@@ -62,10 +58,10 @@ module.exports = class SearchBox extends React.Component {
           autoFocus
         }}
         menuStyle={menuStyle}
-        wrapperProps={{className: 'SearchBox'}}
+        wrapperProps={{ className: 'SearchBox' }}
         items={matchedItems}
         getItemValue={item => item.name}
-        renderItem={(item, highlighted) =>
+        renderItem={(item, highlighted) => (
           <div
             className='searchItem'
             key={item.name}
@@ -73,18 +69,19 @@ module.exports = class SearchBox extends React.Component {
               margin: '8px 0',
               padding: '4px 32px',
               background: '#fff',
-              border: '2px solid ' + ((highlighted && !whiteBg) ? '#000' : '#fff'),
-              textDecoration: (highlighted && whiteBg) ? 'underline' : 'none'
+              border:
+                '2px solid ' + (highlighted && !whiteBg ? '#000' : '#fff'),
+              textDecoration: highlighted && whiteBg ? 'underline' : 'none'
             }}
           >
             {item.name}
           </div>
-        }
+        )}
         value={search || ''}
         onChange={this._onInputChangeBound}
         onSelect={(value, item) => {
           this._input.blur()
-          this.setState({matchedItems: []})
+          this.setState({ matchedItems: [] })
           dispatch('NAVIGATE', '#' + item.urlName)
         }}
       />
@@ -94,7 +91,7 @@ module.exports = class SearchBox extends React.Component {
   _onInputChange (e) {
     console.time('_onInputChange')
 
-    const {dispatch} = this.props
+    const { dispatch } = this.props
 
     const value = e.target.value
     dispatch('SET_SEARCH', value === '' ? null : value)
@@ -104,8 +101,10 @@ module.exports = class SearchBox extends React.Component {
       return
     }
 
-    const partialIndexItems = this._search('partial', value)
-      .slice(0, NUM_RESULTS)
+    const partialIndexItems = this._search('partial', value).slice(
+      0,
+      NUM_RESULTS
+    )
 
     const fullIndexItems = this._search('full', value)
       .slice(0, NUM_RESULTS)

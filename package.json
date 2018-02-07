@@ -26,8 +26,8 @@
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-react": "^7.6.1",
     "eslint-plugin-standard": "^3.0.1",
-    "flow-bin": "^0.65.0",
-    "flow-typed": "^2.3.0",
+    "flow-bin": "^0.52.0",
+    "flow-typed": "^2.1.2",
     "gl-matrix": "^2.4.0",
     "mkdirp": "^0.5.1",
     "normalize-for-search": "^2.0.1",
@@ -53,7 +53,7 @@
   "scripts": {
     "start": "./scripts/main.sh",
     "build": "browserify app/index.js -o static/bundle.js",
-    "test": "eslint && flow",
+    "test": "eslint script app && flow",
     "watch": "watchify app/index.js -dv -o static/bundle.js"
   }
 }

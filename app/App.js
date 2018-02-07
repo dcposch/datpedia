@@ -1,8 +1,10 @@
-const React = require('react')
-const SearchPage = require('./SearchPage.js')
-const ArticlePage = require('./ArticlePage.js')
+import React from 'react'
+import SearchPage from './SearchPage.js'
+import ArticlePage from './ArticlePage.js'
 
-module.exports = function App (props) {
+import type StoreDispatch from './types.js'
+
+export default function App (props: StoreDispatch) {
   const { store, dispatch } = props
   const { urlName } = store
   console.log('rendering', urlName || 'search page')

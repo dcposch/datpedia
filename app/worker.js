@@ -1,8 +1,8 @@
 /* global fetch */
 
-const { Comlink } = require('comlinkjs')
+import { Comlink } from 'comlinkjs'
 
-module.exports = function (self) {
+export default function (self) {
   async function fetchSearchIndex (url) {
     const res = await fetch(url)
     if (res.status !== 200) {
@@ -13,7 +13,5 @@ module.exports = function (self) {
     return searchIndex
   }
 
-  Comlink.expose({
-    fetchSearchIndex
-  }, self)
+  Comlink.expose({ fetchSearchIndex }, self)
 }

@@ -1,3 +1,6 @@
 {
-  "extends": ["standard", "standard-flow", "standard-react"]
+  "extends": ["standard", "standard-flow", "standard-react"],
+  "rules": {
+    "generator-star-spacing": ["off"]
+  }
 }

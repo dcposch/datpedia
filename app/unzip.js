@@ -1,9 +1,9 @@
 /* global fetch, Headers */
 
-const pify = require('pify')
-const yauzl = require('yauzl')
-const concat = require('simple-concat')
-const stream = require('stream')
+import pify from 'pify'
+import yauzl from 'yauzl'
+import concat from 'simple-concat'
+import stream from 'stream'
 
 // Shim setImmediate() for `yauzl`
 global.setImmediate = process.nextTick.bind(process)
@@ -29,11 +29,9 @@ async function openZip (zipPath) {
   }
 
   const reader = new ZipRandomAccessReader(zipPath)
-  const zipFile = await zipFromRandomAccessReaderAsync(
-    reader,
-    zipSize,
-    { lazyEntries: true }
-  )
+  const zipFile = await zipFromRandomAccessReaderAsync(reader, zipSize, {
+    lazyEntries: true
+  })
   zipFile.openReadStreamAsync = pify(zipFile.openReadStream.bind(zipFile))
 
   return zipFile
@@ -51,7 +49,7 @@ async function fetchZipSize (zipPath) {
 async function getFile (zipFile, entryData) {
   const entryValues = {}
   Object.keys(entryData).forEach(k => {
-    entryValues[k] = {value: entryData[k]}
+    entryValues[k] = { value: entryData[k] }
   })
   const entry = Object.create(yauzl.Entry.prototype, entryValues)
 
@@ -120,24 +118,22 @@ class ZipRandomAccessReader extends yauzl.RandomAccessReader {
     const through = new stream.PassThrough()
 
     // Convert [start, end) to [start, end]
-    readBufsForRange(this, start, end - 1)
-      .then((pages) => {
-        pages.forEach(page => through.write(page))
-        through.end()
-      })
+    readBufsForRange(this, start, end - 1).then(pages => {
+      pages.forEach(page => through.write(page))
+      through.end()
+    })
 
     return through
   }
 
   read (buffer, offset, length, position, callback) {
-    readBufsForRange(this, position, position + length - 1)
-      .then(pages => {
-        pages.forEach(page => {
-          page.copy(buffer, offset)
-          offset += page.length
-        })
-        callback()
+    readBufsForRange(this, position, position + length - 1).then(pages => {
+      pages.forEach(page => {
+        page.copy(buffer, offset)
+        offset += page.length
       })
+      callback()
+    })
   }
 }
 
@@ -161,11 +157,11 @@ async function readBufsForRange (reader, start, end) {
     const promise = reader._pagePromiseCache[page]
     let buf = await promise
     if (page === pageStart && page === pageEnd) {
-      buf = buf.slice(start - (page * PAGE_SIZE), end - (page * PAGE_SIZE) + 1)
+      buf = buf.slice(start - page * PAGE_SIZE, end - page * PAGE_SIZE + 1)
     } else if (page === pageStart) {
-      buf = buf.slice(start - (pageStart * PAGE_SIZE), 1 * PAGE_SIZE)
+      buf = buf.slice(start - pageStart * PAGE_SIZE, 1 * PAGE_SIZE)
     } else if (page === pageEnd) {
-      buf = buf.slice(0, end - (pageEnd * PAGE_SIZE) + 1)
+      buf = buf.slice(0, end - pageEnd * PAGE_SIZE + 1)
     }
     ret[page - pageStart] = buf
   }
@@ -176,9 +172,9 @@ async function readPage (reader, page) {
   console.log('loading page ' + page)
 
   const start = page * PAGE_SIZE
-  const end = ((page + 1) * PAGE_SIZE) - 1
+  const end = (page + 1) * PAGE_SIZE - 1
   const headers = new Headers({
-    'Range': `bytes=${start}-${end}`
+    Range: `bytes=${start}-${end}`
   })
 
   // TODO: use simple-get (which uses john's stream-http internally) to
@@ -188,8 +184,10 @@ async function readPage (reader, page) {
   const abuf = await res.arrayBuffer()
   const buf = Buffer.from(abuf)
 
-  console.log(`loaded ${start} to ${end}, ` +
-      `expected ${end - start + 1}b, got ${buf.length}b`)
+  console.log(
+    `loaded ${start} to ${end}, ` +
+      `expected ${end - start + 1}b, got ${buf.length}b`
+  )
 
   return buf
 }

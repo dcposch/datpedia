@@ -1,7 +1,7 @@
-const React = require('react')
-const {mat4, vec4, vec3} = require('gl-matrix')
+import React from 'react'
+import { mat4, vec4, vec3 } from 'gl-matrix'
 
-module.exports = class Globe extends React.Component {
+export default class Globe extends React.Component {
   constructor (props) {
     super(props)
 
@@ -10,15 +10,15 @@ module.exports = class Globe extends React.Component {
     this._onResizeBound = () => this.onResize()
     this._frameBound = () => this.frame()
 
-    const nlat = this._nlat = 5
-    const nlon = this._nlon = 8
+    const nlat = (this._nlat = 5)
+    const nlon = (this._nlon = 8)
 
     this._theta = 0
     this._points = new Float32Array(nlat * nlon * 3)
     for (let i = 0; i < nlat; i++) {
       for (let j = 0; j < nlon; j++) {
-        const plat = ((i - ((nlat - 1) / 2)) / (nlat + 1)) * Math.PI
-        const plon = (j / nlon) * 2 * Math.PI
+        const plat = (i - (nlat - 1) / 2) / (nlat + 1) * Math.PI
+        const plon = j / nlon * 2 * Math.PI
 
         // x y z
         this._points[3 * (i * nlon + j) + 0] = Math.cos(plon) * Math.cos(plat)
@@ -27,11 +27,11 @@ module.exports = class Globe extends React.Component {
       }
     }
 
-    this.state = {width: window.innerWidth, height: window.innerHeight}
+    this.state = { width: window.innerWidth, height: window.innerHeight }
   }
 
   onResize () {
-    this.setState({width: window.innerWidth, height: window.innerHeight})
+    this.setState({ width: window.innerWidth, height: window.innerHeight })
   }
 
   componentDidMount () {
@@ -44,7 +44,7 @@ module.exports = class Globe extends React.Component {
   }
 
   render () {
-    const {width, height} = this.state
+    const { width, height } = this.state
     const style = {
       position: 'absolute',
       top: 0,
@@ -97,7 +97,7 @@ module.exports = class Globe extends React.Component {
     }
 
     // COMPUTE frame
-    const {width, height} = this.state
+    const { width, height } = this.state
     const w2 = width / 2
     const h2 = height / 2
     const m = 0.8 * Math.min(w2, h2)
@@ -109,7 +109,8 @@ module.exports = class Globe extends React.Component {
     const eye = vec3.fromValues(
       2 * Math.cos(t / 3),
       2 * Math.sin(t / 3),
-      0.1 * Math.sin(t / Math.PI))
+      0.1 * Math.sin(t / Math.PI)
+    )
     const up = vec3.create()
     vec3.cross(up, eye, vec3.fromValues(0, 0, 1))
     vec3.normalize(up, up)
@@ -156,8 +157,8 @@ function setLine (line, pA, pB, mat, m, w2, h2) {
     }
   }
 
-  line.setAttribute('x1', (a[0] / a[3]) * m + w2)
-  line.setAttribute('y1', (a[1] / a[3]) * m + w2)
-  line.setAttribute('x2', (b[0] / b[3]) * m + h2)
-  line.setAttribute('y2', (b[1] / b[3]) * m + h2)
+  line.setAttribute('x1', a[0] / a[3] * m + w2)
+  line.setAttribute('y1', a[1] / a[3] * m + w2)
+  line.setAttribute('x2', b[0] / b[3] * m + h2)
+  line.setAttribute('y2', b[1] / b[3] * m + h2)
 }

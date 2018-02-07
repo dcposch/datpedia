@@ -1,12 +1,12 @@
-const React = require('react')
-const ReactDOM = require('react-dom')
-const webworkify = require('webworkify')
-const { Comlink } = require('comlinkjs')
+import React from 'react'
+import ReactDOM from 'react-dom'
+import webworkify from 'webworkify'
+import { Comlink } from 'comlinkjs'
 
-const App = require('./App.js')
-const {openZip, getFile} = require('./unzip.js')
-const {urlNameToName} = require('./util.js')
-const {findItem} = require('./search.js')
+import App from './App.js'
+import { openZip, getFile } from './unzip.js'
+import { urlNameToName } from './util.js'
+import { findItem } from './search.js'
 
 const SEARCH_INDEX_PATHS = {
   partial: '/list-partial.json',
@@ -16,7 +16,7 @@ const SEARCH_INDEX_PATHS = {
 const worker = Comlink.proxy(webworkify(require('./worker.js')))
 const zipFilePromise = openZip('/wiki.zip')
 
-const store = window.store = { 
+const store = {
   urlName: null, // null for the home page, or eg "Star_Wars" for that article
   citeNote: null,
   searchIndexes: {
@@ -28,6 +28,9 @@ const store = window.store = {
   articleCache: {}, // article HTML cache, eg "Star_Wars": "<html>..."
   search: null // current search, eg "sta", or null
 }
+
+// Available for easier debugging:
+window.store = store
 
 init()
 
@@ -161,7 +164,7 @@ function dispatch (action, data) {
 
 function routeAndRender () {
   // Route
-  const {hash} = window.location
+  const { hash } = window.location
   const parts = hash.split('#')
   store.urlName = parts[1] || null
   store.citeNote = parts[2] || null
