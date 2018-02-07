@@ -1,3 +1,5 @@
+/* @flow */
+
 import React from 'react'
 import SearchBox from './SearchBox.js'
 
@@ -12,6 +14,8 @@ export default class ArticlePage extends React.Component {
   render () {
     const { store, dispatch } = this.props
     const { articleCache, urlName } = store
+
+    if (urlName == null) return null
 
     const isSearching = store.search != null
     const name = urlName.replace(/_/g, ' ')

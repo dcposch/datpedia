@@ -1,3 +1,5 @@
+/* flow */
+
 import React from 'react'
 
 import SearchBox from './SearchBox.js'
@@ -8,7 +10,7 @@ import type { StoreDispatch } from './types.js'
 /**
  * Search page; doubles as the Datpedia homepage.
  */
-module.exports = class SearchPage extends React.Component {
+export default class SearchPage extends React.Component {
   props: StoreDispatch
 
   render () {

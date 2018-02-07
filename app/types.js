@@ -1,3 +1,5 @@
+/* @flow */
+
 export type Article = {
   urlName: string,
   name: string,

@@ -1,10 +1,10 @@
-/* global fetch */
+/* @flow */
 
 import { Comlink } from 'comlinkjs'
 
-export default function (self) {
+export default function (self: any) {
   async function fetchSearchIndex (url) {
-    const res = await fetch(url)
+    const res = await window.fetch(url)
     if (res.status !== 200) {
       throw new Error('Non-200 status code ' + res.status)
     }

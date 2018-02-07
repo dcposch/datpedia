@@ -1,3 +1,5 @@
+/* @flow */
+
 import React from 'react'
 import ReactDOM from 'react-dom'
 import webworkify from 'webworkify'
@@ -128,7 +130,7 @@ function maybeScrollToCiteNote () {
   const { citeNote } = store
 
   // If no citation currently selected, do nothing
-  if (store.citeNote == null) return
+  if (citeNote == null) return
 
   const $citeNote = document.getElementById(citeNote)
 

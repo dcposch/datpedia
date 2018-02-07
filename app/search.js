@@ -1,17 +1,21 @@
+/* @flow */
+
 import normalizeForSearch from 'normalize-for-search'
 import binarySearchBounds from 'binary-search-bounds'
 
 import { searchIndexSort } from './util.js'
 
+import type { Article } from './types.js'
+
 module.exports = { findItem, findRange }
 
-function findItem (searchIndex, name) {
+function findItem (searchIndex: Article[], name: string) {
   const searchName = normalizeForSearch(name)
   const ix = binarySearchBounds.eq(searchIndex, { searchName }, searchIndexSort)
   return ix < 0 ? null : searchIndex[ix]
 }
 
-function findRange (searchIndex, prefix) {
+function findRange (searchIndex: Article[], prefix: string) {
   const searchPrefix = normalizeForSearch(prefix)
 
   // create items for binary search

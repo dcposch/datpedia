@@ -1,4 +1,4 @@
-/* global fetch, Headers */
+/* @flow */
 
 import pify from 'pify'
 import yauzl from 'yauzl'
@@ -16,7 +16,7 @@ module.exports = { openZip, getFile, readEntries }
 /**
  * Opens a zip file
  */
-async function openZip (zipPath) {
+async function openZip (zipPath: string) {
   // TODO: remove hardcode once Beaker supports HEAD requests
   // https://github.com/beakerbrowser/beaker/issues/826
 
@@ -38,7 +38,7 @@ async function openZip (zipPath) {
 }
 
 async function fetchZipSize (zipPath) {
-  const response = await fetch(zipPath, { method: 'HEAD' })
+  const response = await window.fetch(zipPath, { method: 'HEAD' })
   const size = Number(response.headers.get('content-length'))
   return size
 }
@@ -46,7 +46,7 @@ async function fetchZipSize (zipPath) {
 /**
  * Given a zip file and a filename, extracts file data
  */
-async function getFile (zipFile, entryData) {
+async function getFile (zipFile: any, entryData: any) {
   const entryValues = {}
   Object.keys(entryData).forEach(k => {
     entryValues[k] = { value: entryData[k] }
@@ -62,7 +62,7 @@ async function getFile (zipFile, entryData) {
 // In zip file entries, directory file names end with '/'
 const RE_DIRECTORY_NAME = /\/$/
 
-async function readEntries (zipFile) {
+async function readEntries (zipFile: any) {
   return new Promise((resolve, reject) => {
     const entries = []
 
@@ -173,7 +173,7 @@ async function readPage (reader, page) {
 
   const start = page * PAGE_SIZE
   const end = (page + 1) * PAGE_SIZE - 1
-  const headers = new Headers({
+  const headers = new window.Headers({
     Range: `bytes=${start}-${end}`
   })
 

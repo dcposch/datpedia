@@ -1,9 +1,25 @@
+/* @flow */
+
 import React from 'react'
 import { mat4, vec4, vec3 } from 'gl-matrix'
 
 export default class Globe extends React.Component {
-  constructor (props) {
-    super(props)
+  state: {
+    width: number,
+    height: number
+  }
+
+  _svg: ?HTMLElement
+  _svgLines: Element[][]
+  _onResizeBound: () => void
+  _frameBound: () => void
+  _nlat: number
+  _nlon: number
+  _theta: number
+  _points: Float32Array
+
+  constructor () {
+    super({})
 
     this._svg = null
     this._svgLines = []
@@ -63,7 +79,7 @@ export default class Globe extends React.Component {
     )
   }
 
-  initSvg (svg) {
+  initSvg (svg: HTMLElement) {
     if (this._svg != null) throw new Error('double init')
 
     this._svg = svg
@@ -136,7 +152,7 @@ export default class Globe extends React.Component {
     window.requestAnimationFrame(this._frameBound)
   }
 
-  getPoint (i, j) {
+  getPoint (i: number, j: number) {
     const ix = (i * this._nlon + j) * 3
     return this._points.slice(ix, ix + 3)
   }
@@ -157,8 +173,8 @@ function setLine (line, pA, pB, mat, m, w2, h2) {
     }
   }
 
-  line.setAttribute('x1', a[0] / a[3] * m + w2)
-  line.setAttribute('y1', a[1] / a[3] * m + w2)
-  line.setAttribute('x2', b[0] / b[3] * m + h2)
-  line.setAttribute('y2', b[1] / b[3] * m + h2)
+  line.setAttribute('x1', '' + (a[0] / a[3] * m + w2))
+  line.setAttribute('y1', '' + (a[1] / a[3] * m + w2))
+  line.setAttribute('x2', '' + (b[0] / b[3] * m + h2))
+  line.setAttribute('y2', '' + (b[1] / b[3] * m + h2))
 }

@@ -1,8 +1,10 @@
+/* @flow */
+
 import React from 'react'
 import ReactAutocomplete from 'react-autocomplete'
 import { findRange } from './search.js'
 
-import type { StoreDispatch } from './types.js'
+import type { StoreDispatch, Article } from './types.js'
 
 const NUM_RESULTS = 5
 
@@ -11,10 +13,15 @@ const NUM_RESULTS = 5
  * Each item must have {value, name}
  * Dispatches a 'NAVIGATE' action when the user chooses an item.
  */
-module.exports = class SearchBox extends React.Component {
-  props: StoreDispatch & { autoFocus: boolean, whiteBg: boolean }
+export default class SearchBox extends React.Component {
+  props: StoreDispatch & { autoFocus?: boolean, whiteBg?: boolean }
+  state: {
+    matchedItems: Article[]
+  }
+  _onInputChangeBound: () => void
+  _input: ?HTMLInputElement
 
-  constructor (props) {
+  constructor (props: $PropertyType<SearchBox, 'props'>) {
     super(props)
     this.state = {
       matchedItems: []
@@ -35,7 +42,11 @@ module.exports = class SearchBox extends React.Component {
       position: 'absolute',
       overflow: 'auto',
       zIndex: 999,
-      cursor: 'pointer'
+      cursor: 'pointer',
+      background: '',
+      borderBottom: '',
+      borderLeft: '',
+      borderRight: ''
     }
 
     if (whiteBg) {
@@ -80,7 +91,7 @@ module.exports = class SearchBox extends React.Component {
         value={search || ''}
         onChange={this._onInputChangeBound}
         onSelect={(value, item) => {
-          this._input.blur()
+          if (this._input != null) this._input.blur()
           this.setState({ matchedItems: [] })
           dispatch('NAVIGATE', '#' + item.urlName)
         }}
@@ -88,16 +99,18 @@ module.exports = class SearchBox extends React.Component {
     )
   }
 
-  _onInputChange (e) {
+  _onInputChange () {
     console.time('_onInputChange')
 
     const { dispatch } = this.props
 
-    const value = e.target.value
+    const target = this._input
+    if (target == null) return
+    const value = target.value
     dispatch('SET_SEARCH', value === '' ? null : value)
 
     if (value === '') {
-      this.setState({ value, matchedItems: [] })
+      this.setState({ matchedItems: [] })
       return
     }
 
@@ -125,7 +138,7 @@ module.exports = class SearchBox extends React.Component {
     console.timeEnd('_onInputChange')
   }
 
-  _search (indexName, value) {
+  _search (indexName: string, value: string) {
     const { store } = this.props
     const { searchIndexes } = store
     const searchIndex = searchIndexes[indexName]
