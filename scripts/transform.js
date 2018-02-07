@@ -4,7 +4,7 @@ const fs = require('fs')
 const mkdirpSync = require('mkdirp').sync
 const dataUriSync = require('datauri').sync
 
-const {rewriteImageUrls, rewriteLinks} = require('./relinker.js')
+const { rewriteImageUrls, rewriteLinks } = require('./relinker.js')
 
 if (![3, 4].includes(process.argv.length)) {
   console.log('Usage: ./scripts/transform.js <name> <opt prefix>')
@@ -13,14 +13,15 @@ if (![3, 4].includes(process.argv.length)) {
 
 main(process.argv[2], process.argv[3])
 
-function main (name, optPrefix) {
+function main(name, optPrefix) {
   const dst = 'transform/' + name
   const dstA = dst + '/A'
   mkdirpSync(dstA)
 
   console.log('listing articles')
 
-  let articles = fs.readdirSync('extract/' + name + '/A/')
+  let articles = fs
+    .readdirSync('extract/' + name + '/A/')
     .filter(s => s.endsWith('.html'))
     .map(s => s.substring(0, s.length - '.html'.length))
 
@@ -35,7 +36,7 @@ function main (name, optPrefix) {
   articles.forEach(article => transferArticle(name, article, dstA))
 }
 
-function transferArticle (dumpName, name, dst) {
+function transferArticle(dumpName, name, dst) {
   const filename = 'extract/' + dumpName + '/A/' + name + '.html'
 
   if (!fs.existsSync(filename)) {
@@ -50,26 +51,24 @@ function transferArticle (dumpName, name, dst) {
   fs.writeFileSync(dst + '/' + name + '.html', newHtml)
 }
 
-function transformHtml (html, dumpName, pageUrlName) {
+function transformHtml(html, dumpName, pageUrlName) {
   const lines = html.split(/\n/g).map(s => s.trim())
 
   let foundStylesheet = false
-  const newLines = lines
-    .filter(line => !line.includes('<script'))
-    .map(line => {
-      if (line.startsWith('<link rel="stylesheet"')) {
-        if (foundStylesheet) {
-          console.error('found two stylesheets, ignoring second')
-          return ''
-        }
-        foundStylesheet = true
-        return '<link rel="stylesheet" href="./style.css">'
-      } else if (line.startsWith('<body ')) {
-        return '<body class="mw-body mw-body-content mediawiki">'
-      } else {
-        return line
+  const newLines = lines.filter(line => !line.includes('<script')).map(line => {
+    if (line.startsWith('<link rel="stylesheet"')) {
+      if (foundStylesheet) {
+        console.error('found two stylesheets, ignoring second')
+        return ''
       }
-    })
+      foundStylesheet = true
+      return '<link rel="stylesheet" href="./style.css">'
+    } else if (line.startsWith('<body ')) {
+      return '<body class="mw-body mw-body-content mediawiki">'
+    } else {
+      return line
+    }
+  })
 
   let newHtml = newLines.join('\n')
   newHtml = rewriteImageUrls(newHtml, url => transformImageUrl(url, dumpName))
@@ -78,7 +77,7 @@ function transformHtml (html, dumpName, pageUrlName) {
 }
 
 // Transforms image urls to data:// URIs
-function transformImageUrl (url, dumpName) {
+function transformImageUrl(url, dumpName) {
   if (!url.startsWith('../I/m')) return url
 
   const imageFileName = decodeURIComponent(url.substring(3))
@@ -88,13 +87,14 @@ function transformImageUrl (url, dumpName) {
     dataURI = dataUriSync(path)
   } catch (e) {
     console.log('failed to turn image into data URI', path, e)
-    dataURI = 'data:image/gif;base64,' +
-     'R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+    dataURI =
+      'data:image/gif;base64,' +
+      'R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
   }
   return dataURI
 }
 
-function transformLink (url, pageUrlName) {
+function transformLink(url, pageUrlName) {
   // Leave external links alone
   if (url === '' || url.startsWith('http://') || url.startsWith('https://')) {
     return url

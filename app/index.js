@@ -16,7 +16,7 @@ const SEARCH_INDEX_PATHS = {
 const worker = Comlink.proxy(webworkify(require('./worker.js')))
 const zipFilePromise = openZip('/wiki.zip')
 
-const store = window.store = {
+const store = window.store = { 
   urlName: null, // null for the home page, or eg "Star_Wars" for that article
   citeNote: null,
   searchIndexes: {

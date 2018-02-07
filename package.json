@@ -13,27 +13,35 @@
   "dependencies": {
     "binary-search-bounds": "^2.0.3",
     "brfs": "^1.4.3",
+    "browserify": "^15.2.0",
+    "bubleify": "^1.1.0",
     "comlinkjs": "^2.3.1",
     "datauri": "^1.0.5",
+    "eslint": "^3.0.0",
+    "eslint-config-standard": "^10.0.0",
+    "eslint-config-standard-flow": "^1.0.1",
+    "eslint-config-standard-react": "^5.0.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^6.0.0",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-react": "^7.6.1",
+    "eslint-plugin-standard": "^3.0.1",
+    "flow-bin": "^0.65.0",
+    "flow-typed": "^2.3.0",
     "gl-matrix": "^2.4.0",
     "mkdirp": "^0.5.1",
     "normalize-for-search": "^2.0.1",
     "npm-check": "^5.5.2",
     "pify": "^3.0.0",
+    "prettier-eslint-cli": "^4.1.0",
     "react": "^16.2.0",
     "react-autocomplete": "^1.7.2",
     "react-dom": "^16.2.0",
     "simple-concat": "^1.0.0",
+    "watchify": "^3.9.0",
     "webworkify": "^1.5.0",
-    "yauzl": "dcposch/yauzl",
+    "yauzl": "github:dcposch/yauzl",
     "zimmer": "^1.1.0"
-  },
-  "devDependencies": {
-    "browserify": "^15.2.0",
-    "bubleify": "^1.1.0",
-    "parcel-bundler": "^1.4.1",
-    "standard": "*",
-    "watchify": "^3.9.0"
   },
   "homepage": "https://github.com/dcposch/datpedia#readme",
   "license": "ISC",
@@ -43,11 +51,9 @@
     "url": "git+https://github.com/dcposch/datpedia.git"
   },
   "scripts": {
-    "build": "browserify app/index.js -o static/bundle.js",
-    "build-sw": "browserify app/sw.js -o static/sw-bundle.js",
     "start": "./scripts/main.sh",
-    "test": "standard",
-    "watch": "watchify app/index.js -dv -o static/bundle.js",
-    "zero": "parcel ./zero/index.html"
+    "build": "browserify app/index.js -o static/bundle.js",
+    "test": "eslint && flow",
+    "watch": "watchify app/index.js -dv -o static/bundle.js"
   }
 }
