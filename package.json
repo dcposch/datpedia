@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "browserify": {
     "transform": [
-      "bubleify"
+      "babelify"
     ]
   },
   "bugs": {
@@ -15,7 +15,9 @@
     "binary-search-bounds": "^2.0.3",
     "brfs": "^1.4.3",
     "browserify": "^16.1.0",
-    "bubleify": "^1.1.0",
+    "babelify": "*",
+    "babel-preset-env": "*",
+    "babel-preset-react": "*",
     "comlinkjs": "^2.3.1",
     "datauri": "^1.0.5",
     "eslint": "^3.0.0",
