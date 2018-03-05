@@ -33,6 +33,8 @@ async function main (name) {
     .split(/\n/g)
     .filter(s => s.length > 0)
   const topArticles = articles.filter(a => topArticleNames.includes(a.urlName))
+  console.log('creating list-partial.json from %d top articles', topArticles.length)
+
   writeJsonArray(dir + '/list-partial.json', topArticles)
 }
 

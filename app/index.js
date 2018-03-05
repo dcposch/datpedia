@@ -23,9 +23,7 @@ const store = {
   citeNote: null,
   searchIndexes: {
     partial: [], // list of *top* articles, search normalized and sorted
-    full: [], // list of *all* articles, search normalized and sorted
-    partialPromise: null,
-    fullPromise: null
+    partialPromise: null
   },
   articleCache: {}, // article HTML cache, eg "Star_Wars": "<html>..."
   search: null // current search, eg "sta", or null
@@ -47,7 +45,7 @@ async function init () {
   routeAndRender()
 
   await initSearchIndex('partial')
-  await initSearchIndex('full')
+  // TODO: load full search index from list.tsv
 }
 
 /*
@@ -212,11 +210,13 @@ async function getEntryData (urlName) {
   // First, check the partial index
   const partial = await initSearchIndex('partial')
   let entryData = findItem(partial, name)
-  if (entryData == null) {
+
+  // TODO: full search index
+  /* if (entryData == null) {
     // Then, check the full index
     const full = await initSearchIndex('full')
     entryData = findItem(full, name)
-  }
+  } */
 
   return entryData
 }

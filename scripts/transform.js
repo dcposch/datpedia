@@ -6,14 +6,14 @@ const dataUriSync = require('datauri').sync
 
 const { rewriteImageUrls, rewriteLinks } = require('./relinker.js')
 
-if (![3, 4].includes(process.argv.length)) {
-  console.log('Usage: ./scripts/transform.js <name> <opt prefix>')
+if (3 !== process.argv.length) {
+  console.log('Usage: ./scripts/transform.js <name>')
   process.exit()
 }
 
-main(process.argv[2], process.argv[3])
+main(process.argv[2])
 
-function main (name, optPrefix) {
+function main (name) {
   const dst = 'transform/' + name
   const dstA = dst + '/A'
   mkdirpSync(dstA)
@@ -24,14 +24,6 @@ function main (name, optPrefix) {
     .readdirSync('extract/' + name + '/A/')
     .filter(s => s.endsWith('.html'))
     .map(s => s.substring(0, s.length - '.html'.length))
-
-  if (optPrefix != null) {
-    articles = articles.filter(a => a.startsWith(optPrefix))
-  }
-
-  const ix = articles.indexOf('Sparklehorse')
-  console.log('found Sparklehorse at ' + ix)
-  articles = articles.slice(ix)
 
   articles.forEach(article => transferArticle(name, article, dstA))
 }

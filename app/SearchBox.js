@@ -106,7 +106,7 @@ export default class SearchBox extends React.Component {
 
     const target = this._input
     if (target == null) return
-    const value = target.value
+    const value = target.refs.input.value
     dispatch('SET_SEARCH', value === '' ? null : value)
 
     if (value === '') {
@@ -119,7 +119,7 @@ export default class SearchBox extends React.Component {
       NUM_RESULTS
     )
 
-    const fullIndexItems = this._search('full', value)
+    const fullIndexItems = [] /* TODO: this._search('full', value)
       .slice(0, NUM_RESULTS)
       .filter(fullItem => {
         // Dedupe, since the same result may be in the partial index
@@ -127,7 +127,7 @@ export default class SearchBox extends React.Component {
           return partialItem.urlName === fullItem.urlName
         })
         return !inPartialIndex
-      })
+      }) */
 
     const matchedItems = [].concat(partialIndexItems, fullIndexItems)
 
