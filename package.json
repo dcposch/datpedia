@@ -14,7 +14,7 @@
     "babel-eslint": "^8.2.2",
     "binary-search-bounds": "^2.0.3",
     "brfs": "^1.4.3",
-    "browserify": "^15.2.0",
+    "browserify": "^16.1.0",
     "bubleify": "^1.1.0",
     "comlinkjs": "^2.3.1",
     "datauri": "^1.0.5",
