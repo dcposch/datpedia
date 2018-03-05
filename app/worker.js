@@ -4,7 +4,8 @@ import { Comlink } from 'comlinkjs'
 
 export default function (self: any) {
   async function fetchSearchIndex (url) {
-    const res = await window.fetch(url)
+    console.log('fetching search index ' + url)
+    const res = await self.fetch(url)
     if (res.status !== 200) {
       throw new Error('Non-200 status code ' + res.status)
     }
