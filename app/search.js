@@ -3,7 +3,7 @@
 import normalizeForSearch from 'normalize-for-search'
 import binarySearchBounds from 'binary-search-bounds'
 
-import { searchIndexSort } from './util.js'
+import { searchIndexSort } from '../lib/util.js'
 
 import type { Article } from './types.js'
 

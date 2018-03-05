@@ -6,8 +6,8 @@ import webworkify from 'webworkify'
 import { Comlink } from 'comlinkjs'
 
 import App from './App.js'
-import { openZip, getFile } from './unzip.js'
-import { urlNameToName } from './util.js'
+import { openZip, getFile } from '../lib/unzip.js'
+import { urlNameToName } from '../lib/util.js'
 import { findItem } from './search.js'
 
 const SEARCH_INDEX_PATHS = {

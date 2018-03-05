@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const { searchIndexSort, urlNameToName } = require('../app/util.js')
-const { readEntries } = require('../app/unzip.js')
+const { searchIndexSort, urlNameToName } = require('../lib/util.js')
+const { readEntries } = require('../lib/unzip.js')
 
 const fs = require('fs')
 const pify = require('pify')
