@@ -21,6 +21,7 @@
     "brfs": "^1.4.3",
     "browserify": "^16.1.0",
     "comlinkjs": "^2.3.1",
+    "csv-stream": "^0.1.3",
     "datauri": "^1.0.5",
     "ecstatic": "^3.2.0",
     "eslint": "^3.0.0",
@@ -63,7 +64,7 @@
     "flow-typed": "flow-typed install",
     "start": "./scripts/main.sh",
     "test": "eslint scripts app && flow",
-    "watch": "watchify app/index.js -dv -o static/bundle.js & ecstatic -p 4000 build/wikipedia_en_ray_charles_2015-06"
+    "watch": "./scripts/main.sh wikipedia_en_ray_charles_2015-06 && (watchify app/index.js -dv -o static/bundle.js & ecstatic -p 4000 build/wikipedia_en_ray_charles_2015-06)"
   },
   "standard": {
     "parser": "babel-eslint",

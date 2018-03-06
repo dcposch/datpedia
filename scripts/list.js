@@ -24,8 +24,8 @@ async function main (name) {
   const articles = await loadArticles(dir + '/wiki.zip')
   articles.sort(searchIndexSort)
 
-  console.log('creating list.tsv')
-  writeTsv(dir + '/list.tsv', articles)
+  console.log('creating list-full.tsv')
+  writeTsv(dir + '/list-full.tsv', articles)
 
   console.log('creating list-partial.json')
   const topArticleNames = fs

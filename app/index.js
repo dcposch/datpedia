@@ -1,5 +1,7 @@
 /* @flow */
 
+import csvStream from 'csv-stream'
+import get from 'simple-get'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import webworkify from 'webworkify'
@@ -12,7 +14,7 @@ import { findItem } from './search.js'
 
 const SEARCH_INDEX_PATHS = {
   partial: '/list-partial.json',
-  full: '/list-full.json'
+  full: '/list-full.tsv'
 }
 
 const worker = Comlink.proxy(webworkify(require('./worker.js')))
@@ -45,7 +47,22 @@ async function init () {
   routeAndRender()
 
   await initSearchIndex('partial')
+  await initFullIndex()
   // TODO: load full search index from list.tsv
+}
+
+async function initFullIndex () {
+  const url = SEARCH_INDEX_PATHS.full
+  get(url, function (err, res) {
+    if (err) return window.alert('Could not load search index')
+    res
+      .pipe(csvStream.createStream({
+        delimiter: '\t'
+      }))
+      .on('data', data => {
+        console.log(data)
+      })
+  })
 }
 
 /*
@@ -74,19 +91,6 @@ function initDat () {
 */
 
 /**
- * TODO: maybe use ServiceWorker once Beaker allows it
- * See: https://github.com/beakerbrowser/beaker/issues/46
- *
- * async function registerServiceWorker () {
- *   if (!navigator.serviceWorker) throw new Error('No service worker support')
- *   return navigator.serviceWorker.register(
- *     '/sw-bundle.js',
- *     { scope: '/' }
- *   )
- * }
- */
-
-/**
  * Either starts fetching a given search index,
  * or returns the promise for a fetch already done or already in progress.
  * (Returns a promise no matter what.)
@@ -96,17 +100,17 @@ function initSearchIndex (indexName) {
 
   if (promise == null) {
     // Start the fetch
-    promise = fetchSearchIndex(indexName)
+    promise = fetchPartialIndex(indexName)
     store.searchIndexes[indexName + 'Promise'] = promise
   }
 
   return promise
 }
 
-async function fetchSearchIndex (indexName) {
+async function fetchPartialIndex (indexName) {
   const indexPath = SEARCH_INDEX_PATHS[indexName]
   const url = window.location.origin + indexPath
-  const searchIndex = await worker.fetchSearchIndex(url)
+  const searchIndex = await worker.fetchPartialIndex(url)
 
   store.searchIndexes[indexName] = searchIndex
   console.log(

@@ -14,5 +14,5 @@ ln -s ../../static/sphere.gif ./
 ln -s ../../static/style.css ./
 
 ln -s ../../transform/$1/wiki.zip ./
-ln -s ../../transform/$1/list.tsv ./
+ln -s ../../transform/$1/list-full.tsv ./
 ln -s ../../transform/$1/list-partial.json ./
