@@ -58,11 +58,11 @@
     "url": "git+https://github.com/dcposch/datpedia.git"
   },
   "scripts": {
-    "start": "./scripts/main.sh",
     "build": "browserify app/index.js -o static/bundle.js",
+    "flow-typed": "flow-typed install",
+    "start": "./scripts/main.sh",
     "test": "eslint scripts app && flow",
-    "watch": "watchify app/index.js -dv -o static/bundle.js",
-    "flow-typed": "flow-typed install"
+    "watch": "watchify app/index.js -dv -o static/bundle.js"
   },
   "standard": {
     "parser": "babel-eslint",
